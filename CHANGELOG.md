@@ -1,3 +1,19 @@
+## 1.0.0 (2025-11-25)
+
+### Features
+
+* add basic simulation description with grid deploymnet and moving node ([be914d8](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/be914d800d5565a21a0427b8ebf1c199184ea040))
+* implement moving node ([06fc534](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/06fc53422d4e499521af7ee4466b9232b27617f8))
+
+### Build and continuous integration
+
+* rename deployment token ([0337f56](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/0337f563f99a3818f1584357b7417df51578266e))
+
+### General maintenance
+
+* remove old sim ([d3942da](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/d3942da0a6384c6e6cac7ddf1f43b1611b96a7fc))
+* update alchemist effects ([ff02e22](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/ff02e223b085d3e10becda248e9974492c7e2aac))
+
 ## [1.1.20](https://github.com/Collektive/collektive-experiments-bootstrap/compare/1.1.19...1.1.20) (2025-11-21)
 
 ### Dependency updates
