@@ -1,0 +1,44 @@
+incarnation: collektive
+
+network-model:
+  type: ConnectWithinDistance
+  parameters: [5]
+
+
+_pool: &program
+  - time-distribution: 1
+    type: Event
+    actions:
+      - type: RunCollektiveProgram
+        parameters: [it.unibo.filtering.AgentKt.gradientEntrypoint]
+
+_movement: &movement
+  - time-distribution:
+      type: DiracComb
+      parameters: [ 1, 1 ]
+    type: Event
+    actions:
+      - type: MoveNode
+        parameters:
+          - 0.2
+          - 1.0
+          - 0.5
+
+deployments:
+  - type: Grid
+    parameters: [ 0, 0, 10, 10, 3, 3, 0.1, 0.5 ]
+    programs: *program
+
+  - type: Point
+    parameters: [ 0, 0 ]
+    contents:
+      - molecule: Movable
+        concentration: true
+    programs:
+      - *movement
+      - *program
+
+
+terminate:
+  type: AfterTime
+  parameters: 3.0
