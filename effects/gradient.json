@@ -16,7 +16,7 @@
     "green": {
       "max": 255,
       "min": 0,
-      "val": 255
+      "val": 0
     },
     "alpha": {
       "max": 255,
@@ -31,14 +31,14 @@
     "size": {
       "max": 100,
       "min": 0,
-      "val": 11
+      "val": 5
     },
-    "molFilter": true,
-    "molString": "it.unibo.collektive.examples.gradient.GradientKt.gradientEntrypoint",
-    "molPropertyFilter": true,
+    "molFilter": false,
+    "molString": "",
+    "molPropertyFilter": false,
     "property": "",
     "writingPropertyValue": false,
-    "c": "HUE",
+    "c": "ALPHA",
     "reverse": false,
     "propoom": {
       "max": 10,
@@ -56,7 +56,7 @@
       "val": 10
     },
     "colorCache": {
-      "value": -16711936
+      "value": -16777216
     }
   }
 ]
