@@ -1,3 +1,14 @@
+## [1.0.1](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/compare/1.0.0...1.0.1) (2025-11-26)
+
+### Bug Fixes
+
+* fix move node ([d71ee55](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/d71ee556872d23294753c59cf707226926d472c0))
+* update simulation config ([88dbf90](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/88dbf908bdc7118dced74ed640eb15c44f78dbe3))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.0.0 [skip ci] ([6c43641](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/6c43641a4cf8a468676b81e831a93db51dc786c2))
+
 ## 1.0.0 (2025-11-25)
 
 ### Features
