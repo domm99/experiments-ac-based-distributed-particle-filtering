@@ -21,7 +21,7 @@ class MoveNode<T> (
     node: Node<T>,
     val xVel: Double,
     val yVel: Double,
-) : AbstractMoveNode<T, Euclidean2DPosition>(environment, node, false) {
+) : AbstractMoveNode<T, Euclidean2DPosition>(environment, node, true) {
 
     private val random = Random()
     private val sigmaSquared = 0.00035
