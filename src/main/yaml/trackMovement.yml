@@ -38,6 +38,23 @@ deployments:
       - *movement
       - *program
 
+
+export:
+  - type: CSVExporter
+    parameters:
+      fileNameRoot: "experiment"
+      interval: 1.0
+      exportPath: "data"
+    data:
+      - time
+      - molecule: PositionX
+        aggregators: [mean]
+        value-filter: onlyFinite
+        precision: 3
+      - molecule: PositionY
+        aggregators: [mean]
+        value-filter: onlyfinite
+
 terminate:
   type: AfterTime
   parameters: 10000.0

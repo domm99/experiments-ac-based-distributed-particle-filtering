@@ -7,6 +7,7 @@ import it.unibo.alchemist.model.Action
 import it.unibo.alchemist.model.Reaction
 import it.unibo.alchemist.model.Environment
 import it.unibo.alchemist.model.actions.AbstractMoveNode
+import it.unibo.alchemist.model.molecules.SimpleMolecule
 import it.unibo.alchemist.model.positions.Euclidean2DPosition
 import kotlin.math.max
 
@@ -27,9 +28,20 @@ class MoveNode<T> (
 
     override fun getNextPosition(): Euclidean2DPosition? {
         val currentPosition = environment.getPosition(node)
+        storePosition(currentPosition)
         var newPosition = computeNextPosition(currentPosition)
         newPosition = checkBoundaries(newPosition)
         return newPosition
+    }
+
+    private fun storePosition(currentPosition: Euclidean2DPosition) {
+        val node =
+            environment.nodes.first { it.contains(SimpleMolecule("Movable")) }
+        node
+            .setConcentration(SimpleMolecule("PositionX"), currentPosition.x as T?)
+
+        node
+            .setConcentration(SimpleMolecule("PositionY"), currentPosition.y as T?)
     }
 
     override fun cloneAction(
