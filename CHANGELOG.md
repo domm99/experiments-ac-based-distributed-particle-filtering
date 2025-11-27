@@ -1,3 +1,18 @@
+## [1.1.0](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/compare/1.0.1...1.1.0) (2025-11-27)
+
+### Features
+
+* add boundaries ([1e1c3f3](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/1e1c3f37ad63488cc1f7bfe88d6181bfd16ad3db))
+* add friction to avoid explosion of velocities ([8ab11f5](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/8ab11f5e43bc819a426b1a52124df12027ddea84))
+
+### Bug Fixes
+
+* update simulation config ([a46029d](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/a46029ddf0789bc30c59991b4ade1faf7df93167))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.0.1 [skip ci] ([af1e690](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/af1e69019a1a1da0b914ab8db9905c14d57258ab))
+
 ## [1.0.1](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/compare/1.0.0...1.0.1) (2025-11-26)
 
 ### Bug Fixes
