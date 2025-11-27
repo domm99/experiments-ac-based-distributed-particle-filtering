@@ -1,9 +1,11 @@
 incarnation: collektive
 
+_constants:
+  sideLength: &sideLength 100.0
+
 network-model:
   type: ConnectWithinDistance
-  parameters: [5]
-
+  parameters: [15]
 
 _pool: &program
   - time-distribution: 1
@@ -20,14 +22,15 @@ _movement: &movement
         parameters:
           - 0.05
           - 0.03
+          - *sideLength
 
 deployments:
   - type: Grid
-    parameters: [ 0, 0, 10, 10, 3, 3, 0.1, 0.5 ]
+    parameters: [ 0, 0, *sideLength, *sideLength, 10, 10, 1, 1 ]
     programs: *program
 
   - type: Point
-    parameters: [ 2, 2 ]
+    parameters: [ 20, 20 ]
     contents:
       - molecule: Movable
         concentration: true
@@ -37,4 +40,4 @@ deployments:
 
 terminate:
   type: AfterTime
-  parameters: 50.0
+  parameters: 10000.0
