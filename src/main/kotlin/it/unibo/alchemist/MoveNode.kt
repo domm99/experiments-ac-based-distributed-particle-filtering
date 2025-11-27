@@ -8,6 +8,7 @@ import it.unibo.alchemist.model.Reaction
 import it.unibo.alchemist.model.Environment
 import it.unibo.alchemist.model.actions.AbstractMoveNode
 import it.unibo.alchemist.model.positions.Euclidean2DPosition
+import kotlin.math.max
 
 class MoveNode<T> (
     environment: Environment<T, Euclidean2DPosition>,
@@ -22,6 +23,7 @@ class MoveNode<T> (
     private val sigma = sqrt(sigmaSquared)
     private var currentVx = xVel
     private var currentVy = yVel
+    private val friction = 0.97
 
     override fun getNextPosition(): Euclidean2DPosition? {
         val currentPosition = environment.getPosition(node)
@@ -44,10 +46,8 @@ class MoveNode<T> (
 
         val newX = currentPosition.x + currentVx + (0.5 * ux)
         val newY = currentPosition.y + currentVy + (0.5 * uy)
-        currentVx = currentVx + ux
-        currentVy = currentVy + uy
-
-        println("Current vx = $currentVx currentVy = $currentVy")
+        currentVx = (currentVx * friction) + ux
+        currentVy = (currentVy * friction) + uy
 
         return Euclidean2DPosition(newX, newY)
     }
