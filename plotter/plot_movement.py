@@ -41,15 +41,15 @@ if __name__ == '__main__':
     plt.figure(figsize=(10, 10))
 
     plt.plot(df['PositionX'], df['PositionY'],
-             label='Trajectory', color='blue', linestyle='-', linewidth=1.5, alpha=0.7)
+             label='Trajectory', color='blue', linestyle='--', linewidth=2, alpha=0.7)
 
     # Initial point
     plt.scatter(df['PositionX'].iloc[0], df['PositionY'].iloc[0],
-                color='green', s=150, label='Start', zorder=5, edgecolors='black')
+                color='green', s=100, label='Start', zorder=5, edgecolors='black')
 
     # Final point
     plt.scatter(df['PositionX'].iloc[-1], df['PositionY'].iloc[-1],
-                color='red', s=150, label='End', zorder=5, edgecolors='black')
+                color='red', s=100, label='End', zorder=5, edgecolors='black')
 
     plt.xlim(0, side_length)
     plt.ylim(0, side_length)
