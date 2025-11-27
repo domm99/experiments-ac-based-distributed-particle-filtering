@@ -1,3 +1,22 @@
+## [1.2.0](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/compare/1.1.0...1.2.0) (2025-11-27)
+
+### Features
+
+* implement sript for movement plotting from data exported by alchemist ([6ed54cc](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/6ed54ccd8ae3390881cadf5c1a88e4ff5293a3ff))
+* logging position of movable node ([0614a1b](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/0614a1be4a778a66c381f5205867867bb689a217))
+
+### Dependency updates
+
+* **deps:** update python dependencies ([a2fc26a](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/a2fc26a097a77845d0665bb355f8295688a2a1b1))
+
+### Bug Fixes
+
+* update simulation config ([a18adce](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/a18adcef537f858b3dcdc156fd615bdfc0da91b5))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.1.0 [skip ci] ([1df811f](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/1df811f3774fbe53bdca477163e285950a2c0d55))
+
 ## [1.1.0](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/compare/1.0.1...1.1.0) (2025-11-27)
 
 ### Features
