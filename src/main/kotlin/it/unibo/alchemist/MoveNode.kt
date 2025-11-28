@@ -16,15 +16,13 @@ class MoveNode<T> (
     node: Node<T>,
     val xVel: Double,
     val yVel: Double,
-    val sideLength: Double
+    val sideLength: Double,
+    val accelerationFactor: Double,
 ) : AbstractMoveNode<T, Euclidean2DPosition>(environment, node, true) {
 
-    private val random = Random()
-    private val sigmaSquared = 0.00035
-    private val sigma = sqrt(sigmaSquared)
     private var currentVx = xVel
     private var currentVy = yVel
-    private val friction = 0.97
+    private var currentScalarVelocity: Double = 0.0
 
     override fun getNextPosition(): Euclidean2DPosition? {
         val currentPosition = environment.getPosition(node)
@@ -48,19 +46,19 @@ class MoveNode<T> (
         p0: Node<T?>?,
         p1: Reaction<T?>?
     ): Action<T?>? {
-        return MoveNode(environment, node, xVel, yVel, sideLength)
+        return MoveNode(environment, node, xVel, yVel, sideLength, accelerationFactor)
     }
 
-    private fun computeNextPosition(currentPosition: Euclidean2DPosition): Euclidean2DPosition {
+    private fun trajectoryFunction(x: Double): Double {
+        return x + kotlin.math.sin(x)
+    }
 
-        val ux = random.nextGaussian() * sigma
-        val uy = random.nextGaussian() * sigma
-
-        val newX = currentPosition.x + currentVx + (0.5 * ux)
-        val newY = currentPosition.y + currentVy + (0.5 * uy)
-        currentVx = (currentVx * friction) + ux
-        currentVy = (currentVy * friction) + uy
-
+    private fun computeNextPosition(
+        currentPosition: Euclidean2DPosition
+    ): Euclidean2DPosition {
+        currentScalarVelocity = currentScalarVelocity + accelerationFactor
+        val newX = currentPosition.x + currentScalarVelocity
+        val newY = trajectoryFunction(newX)
         return Euclidean2DPosition(newX, newY)
     }
 
