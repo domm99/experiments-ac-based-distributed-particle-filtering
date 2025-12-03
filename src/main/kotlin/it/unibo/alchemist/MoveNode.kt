@@ -23,6 +23,7 @@ class MoveNode<T> (
     private var currentVx = xVel
     private var currentVy = yVel
     private var currentScalarVelocity: Double = 0.0
+    private var friction: Double = 0.97
 
     override fun getNextPosition(): Euclidean2DPosition? {
         val currentPosition = environment.getPosition(node)
@@ -56,7 +57,7 @@ class MoveNode<T> (
     private fun computeNextPosition(
         currentPosition: Euclidean2DPosition
     ): Euclidean2DPosition {
-        currentScalarVelocity = currentScalarVelocity + accelerationFactor
+        currentScalarVelocity = (currentScalarVelocity * friction) + accelerationFactor
         val newX = currentPosition.x + currentScalarVelocity
         val newY = trajectoryFunction(newX)
         return Euclidean2DPosition(newX, newY)
