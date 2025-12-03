@@ -23,6 +23,7 @@ _movement: &movement
           - 0.05
           - 0.03
           - *sideLength
+          - 0.001
 
 deployments:
   - type: Grid
@@ -30,14 +31,12 @@ deployments:
     programs: *program
 
   - type: Point
-    parameters: [ 20, 20 ]
+    parameters: [ 0, 0 ]
     contents:
       - molecule: Movable
         concentration: true
     programs:
       - *movement
-      - *program
-
 
 export:
   - type: CSVExporter
@@ -57,4 +56,4 @@ export:
 
 terminate:
   type: AfterTime
-  parameters: 1000.0
+  parameters: 10000.0
