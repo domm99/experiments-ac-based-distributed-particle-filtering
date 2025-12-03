@@ -1,3 +1,21 @@
+## [1.3.0](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/compare/1.2.0...1.3.0) (2025-12-03)
+
+### Features
+
+* add friction to avoid explosion of velocities ([0c69b95](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/0c69b957ec7e3cd72822ac5dea4c5a6a9db38d70))
+* add skeleton for AC based DPF ([878b020](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/878b02000fcd9e76352226b94b41474fc6d6e1ad))
+* add utils functions to interact with the alchemist environment ([7d7bf36](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/7d7bf36cc914b84260fcd689c906ca4e80106552))
+* moving node using well-known functions as a trajectory ([fe358a9](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/fe358a9dd280885ac0cf3b0c4a6235140f6caca2))
+
+### Bug Fixes
+
+* remove aggregate program from movable node ([cac7069](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/cac7069d604a640faac5f034a315d658306d5060))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.2.0 [skip ci] ([9ccb765](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/9ccb765957979a84007eb30af09b1d262d2e17eb))
+* update gitignore ([c1c4739](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/c1c4739810ff09e65b5f6e6baf96f51a282c59df))
+
 ## [1.2.0](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/compare/1.1.0...1.2.0) (2025-11-27)
 
 ### Features
