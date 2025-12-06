@@ -1,0 +1,68 @@
+incarnation: collektive
+
+_constants:
+  sideLength: &sideLength 100.0
+
+network-model:
+  type: ConnectWithinDistance
+  parameters: [15]
+
+_pool: &program
+  - time-distribution: 1
+    type: Event
+    actions:
+      - type: RunCollektiveProgram
+        parameters: [it.unibo.filtering.AgentKt.gradientEntrypoint]
+
+_movement: &movement
+  - time-distribution: 1
+    type: Event
+    actions:
+      - type: MoveNode
+        parameters:
+          - 0.05
+          - 0.03
+          - *sideLength
+          - 0.001
+
+_particleFitler: &particleFitler
+  - time-distribution: 1
+    type: Event
+    actions:
+      - type: CentralizedParticleFilter
+        parameters:
+          - *sideLength
+
+deployments:
+  - type: Point
+    parameters: [ 10, 10 ]
+    programs:
+      - *particleFitler
+
+  - type: Point
+    parameters: [ 0, 0 ]
+    contents:
+      - molecule: Movable
+        concentration: true
+    programs:
+      - *movement
+
+export:
+  - type: CSVExporter
+    parameters:
+      fileNameRoot: "experiment"
+      interval: 1.0
+      exportPath: "data"
+    data:
+      - time
+      - molecule: PositionX
+        aggregators: [mean]
+        value-filter: onlyFinite
+        precision: 3
+      - molecule: PositionY
+        aggregators: [mean]
+        value-filter: onlyfinite
+
+terminate:
+  type: AfterTime
+  parameters: 10000.0
