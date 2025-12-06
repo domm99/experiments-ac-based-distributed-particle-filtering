@@ -2,6 +2,7 @@ incarnation: collektive
 
 _constants:
   sideLength: &sideLength 100.0
+  numberOfParticles: &numberOfParticles 100
 
 network-model:
   type: ConnectWithinDistance
@@ -32,6 +33,7 @@ _particleFitler: &particleFitler
       - type: CentralizedParticleFilter
         parameters:
           - *sideLength
+          - *numberOfParticles
 
 deployments:
   - type: Point
