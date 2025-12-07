@@ -1,3 +1,22 @@
+## [1.4.0](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/compare/1.3.0...1.4.0) (2025-12-07)
+
+### Features
+
+* add monitor to export state estimations to csv when simulation is finished ([4d83fe1](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/4d83fe1481796626723b1fcf1a410759e2aeeddb))
+* add particle filter action skeleton ([94baa63](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/94baa6345792c0c505b5e9d29ec6d3a966adb870))
+* add plotting of estimated trajectory ([b56e8d2](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/b56e8d2efa0e25948a876df70b936bcf3a305e75))
+* add simulation spec for centralized particle filter ([3bab65e](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/3bab65e4f246bf3088e23f025e10fb0c5d958b21))
+
+### Bug Fixes
+
+* add number of particles to be used as a parameter ([714c0cd](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/714c0cd0a1d3efb851833cb014f15a347a8da44c))
+
+### General maintenance
+
+* fix effects ([6ab0a28](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/6ab0a283111484ff9b0e3ea7de7bc25d6c3ccd1a))
+* **release:** update gradle.properties .env versions to 1.3.0 [skip ci] ([8b05603](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/8b05603e4fc1614dffc299d2422c5c1d3bb306ff))
+* rename simulation spec file ([5f3c226](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/5f3c2266551f056f1de5797a9c9eb13d85e3ff54))
+
 ## [1.3.0](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/compare/1.2.0...1.3.0) (2025-12-03)
 
 ### Features
