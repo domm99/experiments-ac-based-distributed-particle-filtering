@@ -97,7 +97,12 @@ File(rootProject.rootDir.path + "/src/main/yaml")
             group = alchemistGroupGraphic
             args(
                 "--override",
-                "monitors: { type: SwingGUI, parameters: { graphics: effects/${it.nameWithoutExtension}.json } }",
+                """
+                   monitors: 
+                        - type: SwingGUI
+                          parameters: { graphics: effects/${it.nameWithoutExtension}.json }
+                        - type: it.unibo.alchemist.model.monitors.ExportEstimations
+                """.trimIndent(),
                 "--override",
                 "launcher: { parameters: { batch: [], autoStart: false } }",
                 "--verbosity",

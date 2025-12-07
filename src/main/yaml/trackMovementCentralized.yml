@@ -2,21 +2,19 @@ incarnation: collektive
 
 _constants:
   sideLength: &sideLength 100.0
-  numberOfParticles: &numberOfParticles 100
+  numberOfParticles: &numberOfParticles 500
 
 network-model:
   type: ConnectWithinDistance
   parameters: [15]
 
-_pool: &program
-  - time-distribution: 1
-    type: Event
-    actions:
-      - type: RunCollektiveProgram
-        parameters: [it.unibo.filtering.AgentKt.gradientEntrypoint]
+monitors:
+  - type: it.unibo.alchemist.model.monitors.ExportEstimations
 
 _movement: &movement
-  - time-distribution: 1
+  - time-distribution:
+      type: DiracComb
+      parameters: [ 0.1, 1 ]
     type: Event
     actions:
       - type: MoveNode
@@ -26,8 +24,10 @@ _movement: &movement
           - *sideLength
           - 0.001
 
-_particleFitler: &particleFitler
-  - time-distribution: 1
+_particleFilter: &particleFilter
+  - time-distribution:
+      type: DiracComb
+      parameters: [ 0.4, 1 ]
     type: Event
     actions:
       - type: CentralizedParticleFilter
@@ -38,8 +38,11 @@ _particleFitler: &particleFitler
 deployments:
   - type: Point
     parameters: [ 10, 10 ]
+    contents:
+      - molecule: Filter
+        concentration: true
     programs:
-      - *particleFitler
+      - *particleFilter
 
   - type: Point
     parameters: [ 0, 0 ]
@@ -67,4 +70,4 @@ export:
 
 terminate:
   type: AfterTime
-  parameters: 10000.0
+  parameters: 2000.0
