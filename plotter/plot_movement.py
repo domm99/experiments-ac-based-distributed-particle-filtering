@@ -36,12 +36,17 @@ if __name__ == '__main__':
 
     side_length = 100
 
+    df_estimation = pd.read_csv("data/estimation.csv")
+
     Path('charts').mkdir(parents=True, exist_ok=True)
 
     plt.figure(figsize=(10, 10))
 
     plt.plot(df['PositionX'], df['PositionY'],
              label='Trajectory', color='blue', linestyle='--', linewidth=2, alpha=0.7)
+
+    plt.plot(df_estimation['estimatedX'], df_estimation['estimatedY'],
+                 label='Estimated Trajectory', color='red', linestyle='--', linewidth=2, alpha=0.7)
 
     # Initial point
     plt.scatter(df['PositionX'].iloc[0], df['PositionY'].iloc[0],
