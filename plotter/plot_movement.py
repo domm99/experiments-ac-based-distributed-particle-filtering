@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     side_length = 100
 
-    df_estimation = pd.read_csv("data/estimation.csv")
+    df_estimation = pd.read_csv("data/estimations.csv")
 
     Path('charts').mkdir(parents=True, exist_ok=True)
 
