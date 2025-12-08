@@ -2,7 +2,7 @@ incarnation: collektive
 
 _constants:
   sideLength: &sideLength 100.0
-  numberOfParticles: &numberOfParticles 500
+  numberOfParticles: &numberOfParticles 50
 
 network-model:
   type: ConnectWithinDistance
