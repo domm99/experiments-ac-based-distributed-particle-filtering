@@ -30,7 +30,7 @@ class CentralizedParticleFilter<T>(
 ): AbstractAction<T>(node) {
 
     private val random = java.util.Random()
-    private val maxInitialSpeed = 2.0
+    private val maxInitialSpeed = 2.0 // TODO - check
     private val estimations: MutableList<Point> = mutableListOf()
 
     private var particles: MutableList<Particle> = MutableList(numberOfParticles) {
@@ -46,106 +46,120 @@ class CentralizedParticleFilter<T>(
         val movingNode = environment.nodes.first { it.contains(SimpleMolecule("Movable")) }
         val truePosition = environment.getPosition(movingNode)
 
-        val dt = 1.0
-        val measurementNoise = 1.0 // TODO - check dei noise
-        val sensorNoise = 0.8
-        val measuredX = truePosition.x + random.nextGaussian() * sensorNoise
-        val measuredY = truePosition.y + random.nextGaussian() * sensorNoise
-
-        predict(dt)
-        update(measuredX, measuredY, measurementNoise)
-
-        val estimation = getEstimate()
-        estimations.add(Point(estimation.x, estimation.y))
+        val sampledParticles = resample()
+        val newParticles = predictParticles(sampledParticles)
+        particles = updateWeights(newParticles, truePosition).toMutableList()
+        estimatePosition()
         node.setConcentration(SimpleMolecule("Estimations"), estimations as T)
     }
 
-    private fun predict(dt: Double) {
-        val posNoise = 0.2
-        val velNoise = 0.5
+    private fun predictParticles(
+        sampledParticles: List<Particle>,
+        stdDev: Double = 1.0,
+        dt: Double = 1.0
+    ): List<Particle> {
 
-        for (p in particles) {
-            p.x += (p.vx * dt) + (random.nextGaussian() * posNoise)
-            p.y += (p.vy * dt) + (random.nextGaussian() * posNoise)
-            p.vx += random.nextGaussian() * velNoise
-            p.vy += random.nextGaussian() * velNoise
+        val newParticles = ArrayList<Particle>(sampledParticles.size)
+
+        for (p in sampledParticles) {
+            val noiseX = random.nextGaussian() * stdDev
+            val noiseY = random.nextGaussian() * stdDev
+            val noiseVx = random.nextGaussian() * stdDev
+            val noiseVy = random.nextGaussian() * stdDev
+
+            val newX = p.x + (p.vx * dt) + noiseX
+            val newY = p.y + (p.vy * dt) + noiseY
+            val newVx = p.vx + noiseVx
+            val newVy = p.vy + noiseVy
+
+            newParticles.add(Particle(newX, newY, newVx, newVy, p.weight))
         }
+
+        return newParticles
     }
 
-    private fun update(measuredX: Double, measuredY: Double, observationNoise: Double) {
+    private fun updateWeights(
+        newParticles: List<Particle>,
+        measurement: Euclidean2DPosition,
+        measurementStdDev: Double = 1.0
+        ): List<Particle> {
+        var totalWeight = 0.0
 
-        for (particle in particles) {
-            val distance = hypot(
-                particle.x - measuredX,
-                particle.y - measuredY
-            )
-            val likelihood = exp(-(distance * distance) / (2 * observationNoise * observationNoise))
-            particle.weight *= likelihood
+        for (p in newParticles) {
+            val dist = hypot(p.x - measurement.x, p.y - measurement.y)
+
+            // P(z|x) ~ exp(-dist^2 / (2 * sigma^2))
+            val likelihood = exp(-0.5 * (dist * dist) / (measurementStdDev * measurementStdDev))
+
+            p.weight = likelihood
+            totalWeight += likelihood
         }
 
         // Weights normalization
-        val sumOfWeights = particles.sumOf { it.weight }
-        if (sumOfWeights > 0) {
-            for (particle in particles) {
-                particle.weight /= sumOfWeights
+        if (totalWeight > 0.0) {
+            for (p in newParticles) {
+                p.weight /= totalWeight
             }
         } else {
-            // If all weights are equal to zero then assign uniform weights
-            particles.forEach { it.weight = 1.0 / numberOfParticles }
+            val uniformWeight = 1.0 / numberOfParticles
+            for (p in newParticles) {
+                p.weight = uniformWeight
+            }
         }
 
+        return newParticles
     }
 
-    data class StateEstimate(val x: Double, val y: Double, val vx: Double, val vy: Double)
+    fun resample(): List<Particle> {
+        val newParticles = ArrayList<Particle>(numberOfParticles)
+        val totalWeight = particles.sumOf { it.weight }
 
-    // TODO - check
-    fun getEstimate(): StateEstimate {
-        var sumX = 0.0
-        var sumY = 0.0
-        var sumVx = 0.0
-        var sumVy = 0.0
+        if (totalWeight == 0.0) return particles
 
-        for (p in particles) {
-            sumX += p.x * p.weight
-            sumY += p.y * p.weight
-            sumVx += p.vx * p.weight
-            sumVy += p.vy * p.weight
-        }
-
-        return StateEstimate(sumX, sumY, sumVx, sumVy)
-    }
-
-    fun resample() {
-        val newParticles = mutableListOf<Particle>()
         val cumulativeWeights = DoubleArray(numberOfParticles)
+        var currentSum = 0.0
 
-        // Calcola la somma cumulativa dei pesi
-        var cumulativeSum = 0.0
         for (i in 0 until numberOfParticles) {
-            cumulativeSum += particles[i].weight
-            cumulativeWeights[i] = cumulativeSum
+            currentSum += particles[i].weight
+            cumulativeWeights[i] = currentSum / totalWeight
         }
 
-        // Algoritmo di Resampling a Ruota di Fortuna
-        for (i in 0 until numberOfParticles) {
-            val r = random.nextDouble() // Un numero casuale tra 0.0 e 1.0
+        cumulativeWeights[numberOfParticles - 1] = 1.0
 
-            // Trova la particella corrispondente al valore casuale r
+        val resetWeight = 1.0 / numberOfParticles
+
+        repeat(numberOfParticles) {
+            val r = random.nextDouble()
+
+            var selectedIndex = 0
             for (j in 0 until numberOfParticles) {
-                if (r < cumulativeWeights[j]) {
-                    // Clona la particella selezionata, ripristinando il suo peso
-                    newParticles.add(Particle(
-                        particles[j].x,
-                        particles[j].y,
-                        particles[j].vx,
-                        particles[j].vy ,
-                        1.0 / numberOfParticles
-                    ))
+                if (r <= cumulativeWeights[j]) {
+                    selectedIndex = j
                     break
                 }
             }
+
+            val p = particles[selectedIndex]
+            newParticles.add(Particle(
+                x = p.x,
+                y = p.y,
+                vx = p.vx,
+                vy = p.vy,
+                weight = resetWeight
+            ))
         }
-        particles = newParticles
+
+        return newParticles
+    }
+
+    private fun estimatePosition() {
+        var x = 0.0
+        var y = 0.0
+        for (p in particles) {
+            x += p.x * p.weight
+            y += p.y * p.weight
+        }
+        estimations.add(Point(x, y))
     }
 
     override fun getContext(): Context? {
