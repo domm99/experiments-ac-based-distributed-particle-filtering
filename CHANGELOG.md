@@ -1,3 +1,18 @@
+## [1.5.0](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/compare/1.4.0...1.5.0) (2025-12-08)
+
+### Features
+
+* finished centralized particle filter ([3d11c15](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/3d11c15068f3f80572529357fbea2e6caf51a5ee))
+
+### Bug Fixes
+
+* fix file name ([a242340](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/a242340c1eeaefc6ced5f15674653bf81b71a48b))
+* fix hyperparams ([1183458](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/11834580112eb3e109685b2be5d61329f784040e))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.4.0 [skip ci] ([7c7d316](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/7c7d3166a6a7c5978d3d6ce0f3d64f0e0899f59f))
+
 ## [1.4.0](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/compare/1.3.0...1.4.0) (2025-12-07)
 
 ### Features
