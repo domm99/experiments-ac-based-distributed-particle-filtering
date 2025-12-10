@@ -3,6 +3,7 @@ incarnation: collektive
 _constants:
   sideLength: &sideLength 100.0
   numberOfParticles: &numberOfParticles 500
+  maxInitialSpeed: &maxInitialSpeed 2.0
 
 network-model:
   type: ConnectWithinDistance
@@ -34,6 +35,7 @@ _particleFilter: &particleFilter
         parameters:
           - *sideLength
           - *numberOfParticles
+          - *maxInitialSpeed
 
 deployments:
   - type: Point
