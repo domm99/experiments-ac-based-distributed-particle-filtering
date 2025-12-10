@@ -1,17 +1,17 @@
 package it.unibo.alchemist
 
-import java.util.Random
-import kotlin.math.sqrt
-import it.unibo.alchemist.model.Node
 import it.unibo.alchemist.model.Action
-import it.unibo.alchemist.model.Reaction
 import it.unibo.alchemist.model.Environment
+import it.unibo.alchemist.model.Node
+import it.unibo.alchemist.model.Reaction
 import it.unibo.alchemist.model.actions.AbstractMoveNode
 import it.unibo.alchemist.model.molecules.SimpleMolecule
 import it.unibo.alchemist.model.positions.Euclidean2DPosition
+import java.util.Random
 import kotlin.math.max
+import kotlin.math.sqrt
 
-class MoveNode<T> (
+class MoveNode<T>(
     environment: Environment<T, Euclidean2DPosition>,
     node: Node<T>,
     val xVel: Double,
@@ -43,21 +43,15 @@ class MoveNode<T> (
             .setConcentration(SimpleMolecule("PositionY"), currentPosition.y as T?)
     }
 
-    override fun cloneAction(
-        p0: Node<T?>?,
-        p1: Reaction<T?>?
-    ): Action<T?>? {
-        return MoveNode(environment, node, xVel, yVel, sideLength, accelerationFactor)
-    }
+    override fun cloneAction(p0: Node<T?>?, p1: Reaction<T?>?): Action<T?>? =
+        MoveNode(environment, node, xVel, yVel, sideLength, accelerationFactor)
 
     private fun trajectoryFunction(x: Double): Double {
         return 0.5 * x + 5 * kotlin.math.sin(0.3 * x)
-    //x + kotlin.math.sin(x)
+        // x + kotlin.math.sin(x)
     }
 
-    private fun computeNextPosition(
-        currentPosition: Euclidean2DPosition
-    ): Euclidean2DPosition {
+    private fun computeNextPosition(currentPosition: Euclidean2DPosition): Euclidean2DPosition {
         currentScalarVelocity = (currentScalarVelocity * friction) + accelerationFactor
         val newX = currentPosition.x + currentScalarVelocity
         val newY = trajectoryFunction(newX)
@@ -85,5 +79,4 @@ class MoveNode<T> (
         }
         return Euclidean2DPosition(newX, newY)
     }
-
 }
