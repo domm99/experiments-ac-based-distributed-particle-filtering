@@ -1,0 +1,43 @@
+package it.unibo.collektive
+
+import it.unibo.collektive.aggregate.Field
+import it.unibo.collektive.aggregate.api.Aggregate
+import it.unibo.collektive.aggregate.api.neighboring
+import it.unibo.collektive.aggregate.values
+import it.unibo.collektive.alchemist.device.sensors.EnvironmentVariables
+import it.unibo.collektive.alchemist.device.sensors.LocationSensor
+import it.unibo.collektive.stdlib.collapse.reduce
+import it.unibo.filtering.ParticleFilter
+import it.unibo.filtering.Point
+import it.unibo.filtering.div
+import it.unibo.filtering.plus
+import org.apache.commons.math3.random.RandomGenerator
+
+fun Aggregate<Int>.informationFilterEntrypoint(
+    env: EnvironmentVariables,
+    random: RandomGenerator,
+    position: LocationSensor,
+) {
+    localFiltering(env, random, position)
+}
+
+fun Aggregate<*>.localFiltering(env: EnvironmentVariables, random: RandomGenerator, position: LocationSensor) {
+    evolve(ParticleFilter(250, 2.0, 100.0, random)) { filter ->
+        val sampledParticles = filter.resample()
+        val newParticles = filter.predictParticles(sampledParticles)
+        filter.updateWeights(newParticles, averageNeighborhoodPoint(position))
+        val estimation = filter.estimatePosition()
+        val history = env["Estimation"] as MutableList<Point>? ?: mutableListOf()
+        history.add(estimation)
+        env["Estimation"] = estimation
+        filter
+    }
+}
+
+fun Aggregate<*>.averageNeighborhoodPoint(position: LocationSensor): Point {
+    val targetPosition: Point = position.targetsPosition().first()
+    val neighborsTargetPosition: Field<*, Point> = neighboring(targetPosition)
+    val size = neighborsTargetPosition.all.size.toDouble()
+    val averagePosition: Point = neighborsTargetPosition.all.values.reduce(Point::plus) / size
+    return averagePosition
+}

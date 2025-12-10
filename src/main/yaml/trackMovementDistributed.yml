@@ -12,7 +12,7 @@ _pool: &program
     type: Event
     actions:
       - type: RunCollektiveProgram
-        parameters: [it.unibo.filtering.AgentKt.gradientEntrypoint]
+        parameters: [it.unibo.collektive.AggregateInformationAgentKt.informationFilterEntrypoint]
 
 _movement: &movement
   - time-distribution: 1
