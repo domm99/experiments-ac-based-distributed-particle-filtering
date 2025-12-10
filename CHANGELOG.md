@@ -1,3 +1,16 @@
+## [1.6.0](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/compare/1.5.0...1.6.0) (2025-12-10)
+
+### Features
+
+* add error on measurements ([782c89f](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/782c89fbc1e3cdc2b851a5ed2fb4f3fb25c06abb))
+* add more trajectory functions ([862339c](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/862339c1861a2025c415938bb4f0017f17db2d9e))
+
+### General maintenance
+
+* **release:** update gradle.properties .env versions to 1.5.0 [skip ci] ([da8d8bd](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/da8d8bd0a4eb45e48fc29a2f62aacc00c0e0299a))
+* update hyperparams ([7241996](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/72419969471d7b99efa5f0dd59d735772667336b))
+* update readme ([0d1e630](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/commit/0d1e630b81b65350741a0a9a01627685c3322a5c))
+
 ## [1.5.0](https://github.com/domm99/experiments-ac-based-distributed-particle-filtering/compare/1.4.0...1.5.0) (2025-12-08)
 
 ### Features
