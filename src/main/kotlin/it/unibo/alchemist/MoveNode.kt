@@ -51,7 +51,8 @@ class MoveNode<T> (
     }
 
     private fun trajectoryFunction(x: Double): Double {
-        return x + kotlin.math.sin(x)
+        return 0.5 * x + 5 * kotlin.math.sin(0.3 * x)
+    //x + kotlin.math.sin(x)
     }
 
     private fun computeNextPosition(
