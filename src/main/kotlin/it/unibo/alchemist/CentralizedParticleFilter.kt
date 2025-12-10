@@ -42,13 +42,21 @@ class CentralizedParticleFilter<T>(
         Particle(x, y, vx, vy, 1.0 / numberOfParticles)
     }
 
-    override fun execute() {
+    private fun measurePosition(stdDev: Double = 0.5): Euclidean2DPosition {
         val movingNode = environment.nodes.first { it.contains(SimpleMolecule("Movable")) }
         val truePosition = environment.getPosition(movingNode)
+        val newX = truePosition.x + (random.nextGaussian() * stdDev)
+        val newY = truePosition.y + (random.nextGaussian() * stdDev)
+        return Euclidean2DPosition(newX, newY)
+    }
+
+    override fun execute() {
+
+        val position = measurePosition()
 
         val sampledParticles = resample()
         val newParticles = predictParticles(sampledParticles)
-        particles = updateWeights(newParticles, truePosition).toMutableList()
+        particles = updateWeights(newParticles, position).toMutableList()
         estimatePosition()
         node.setConcentration(SimpleMolecule("Estimations"), estimations as T)
     }
@@ -81,7 +89,7 @@ class CentralizedParticleFilter<T>(
     private fun updateWeights(
         newParticles: List<Particle>,
         measurement: Euclidean2DPosition,
-        measurementStdDev: Double = 1.0
+        measurementStdDev: Double = 0.5
         ): List<Particle> {
         var totalWeight = 0.0
 
