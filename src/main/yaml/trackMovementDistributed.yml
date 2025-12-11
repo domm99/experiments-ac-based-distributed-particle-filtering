@@ -27,8 +27,14 @@ _movement: &movement
 
 deployments:
   - type: Grid
-    parameters: [ 0, 0, *sideLength, *sideLength, 10, 10, 1, 1 ]
+    parameters: [ 0, 0, *sideLength, *sideLength, 50, 50, 1, 1 ]
+    contents:
+      - molecule: Filter
+        concentration: true
     programs: *program
+    properties:
+      - type: it.unibo.collektive.alchemist.device.sensors.impl.LocationSensorProperty
+        parameters: [ 0.5 ]
 
   - type: Point
     parameters: [ 0, 0 ]
