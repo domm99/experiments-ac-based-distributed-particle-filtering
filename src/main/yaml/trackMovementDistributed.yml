@@ -2,10 +2,11 @@ incarnation: collektive
 
 _constants:
   sideLength: &sideLength 100.0
+  measurementStdDev: &measurementStdDev 2.0
 
 network-model:
   type: ConnectWithinDistance
-  parameters: [15]
+  parameters: [200]
 
 _pool: &program
   - time-distribution: 1
@@ -34,7 +35,7 @@ deployments:
     programs: *program
     properties:
       - type: it.unibo.collektive.alchemist.device.sensors.impl.LocationSensorProperty
-        parameters: [ 0.5 ]
+        parameters: [ *measurementStdDev ]
 
   - type: Point
     parameters: [ 0, 0 ]
