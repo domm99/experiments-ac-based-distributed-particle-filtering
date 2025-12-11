@@ -10,6 +10,7 @@ class ParticleFilter(
     val maxInitialSpeed: Double = 2.0,
     sideLength: Double = 100.0,
     val random: RandomGenerator,
+    val measurementStdDev: Double = 1.0,
 ) {
 
     var particles: List<Particle> = initParticles(sideLength)
@@ -38,7 +39,7 @@ class ParticleFilter(
         return newParticles
     }
 
-    fun updateWeights(newParticles: List<Particle>, measurement: Point, measurementStdDev: Double = 0.5) {
+    fun updateWeights(newParticles: List<Particle>, measurement: Point) {
         var totalWeight = 0.0
 
         newParticles.forEach { p ->
