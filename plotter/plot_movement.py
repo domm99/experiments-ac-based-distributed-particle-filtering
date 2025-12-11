@@ -24,8 +24,7 @@ def extractVariableNames(filename):
             return regex.findall(lastHeaderLine)
         return []
 
-if __name__ == '__main__':
-
+def generate_charts(name = ''):
     csv_file = 'data/experiment.csv'
 
     lines = np.matrix(openCsv(csv_file))
@@ -36,7 +35,7 @@ if __name__ == '__main__':
 
     side_length = 100
 
-    df_estimation = pd.read_csv("data/estimations.csv")
+    df_estimation = pd.read_csv(f'data/estimations{name}.csv')
 
     Path('charts').mkdir(parents=True, exist_ok=True)
 
@@ -71,4 +70,15 @@ if __name__ == '__main__':
 
     # Mostra il grafico
     plt.tight_layout()
-    plt.savefig('charts/trajectory.pdf')
+    plt.savefig(f'charts/trajectory{name}.pdf')
+
+if __name__ == '__main__':
+
+    centralized = False
+
+    if centralized:
+        generate_charts()
+    else:
+        num_nodes = 4
+        for i in range(num_nodes):
+            generate_charts(name=f'_node-{i}')
