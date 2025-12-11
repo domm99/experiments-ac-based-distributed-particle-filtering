@@ -11,6 +11,18 @@ import java.util.Random
 import kotlin.math.max
 import kotlin.math.sqrt
 
+/**
+ * Represents a movement action that updates the position of a node within a Euclidean 2D environment.
+ * This class defines the motion dynamics, including velocity, boundaries, and trajectory behavior.
+ *
+ * @param T the concentration type managed by the node
+ * @param environment the simulation environment in which the node resides
+ * @param node the node under movement
+ * @param xVel the initial velocity of the node along the x-axis
+ * @param yVel the initial velocity of the node along the y-axis
+ * @param sideLength the boundary limits of the environment (assumes a square-shaped area)
+ * @param accelerationFactor the acceleration factor applied to the node's movement
+ */
 class MoveNode<T>(
     environment: Environment<T, Euclidean2DPosition>,
     node: Node<T>,

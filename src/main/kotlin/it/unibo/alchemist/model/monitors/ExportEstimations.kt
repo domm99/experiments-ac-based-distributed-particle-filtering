@@ -9,6 +9,9 @@ import it.unibo.filtering.Point
 import java.io.File
 import java.util.Locale
 
+/**
+ * Exports the estimations made by filter nodes to CSV files upon simulation completion.
+ */
 class ExportEstimations<T> : OutputMonitor<T, Euclidean2DPosition> {
 
     override fun finished(environment: Environment<T?, Euclidean2DPosition>, time: Time, step: Long) {
@@ -22,6 +25,11 @@ class ExportEstimations<T> : OutputMonitor<T, Euclidean2DPosition> {
 
     }
 
+    /**
+     * Exports the given history of points to a CSV file.
+     * @param filename the name of the file to export to
+     * @param history the list of points representing the history of estimations
+     */
     fun exportToCsv(filename: String, history: List<Point>) {
         File(filename).printWriter().use { out ->
             // Header

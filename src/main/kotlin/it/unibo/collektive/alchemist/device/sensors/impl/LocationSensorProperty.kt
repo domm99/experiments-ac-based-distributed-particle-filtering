@@ -9,6 +9,16 @@ import it.unibo.collektive.alchemist.device.sensors.LocationSensor
 import it.unibo.filtering.Point
 import org.apache.commons.math3.random.RandomGenerator
 
+/**
+ * An implementation of a location sensor property for nodes in an Alchemist environment.
+ *
+ * @param T the concentration type managed by the node
+ * @param P the position type used in the environment
+ * @property environment the simulation environment
+ * @property node the node associated with this sensor property
+ * @property random an instance of a random number generator for simulating measurement noise
+ * @property stdDev the standard deviation for Gaussian noise added to target positions
+ */
 class LocationSensorProperty<T : Any, P : Position<P>>(
     private val environment: Environment<T, P>,
     override val node: Node<T>,

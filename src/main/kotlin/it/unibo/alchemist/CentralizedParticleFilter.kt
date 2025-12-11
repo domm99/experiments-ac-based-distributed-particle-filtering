@@ -12,6 +12,20 @@ import it.unibo.filtering.ParticleFilter
 import it.unibo.filtering.Point
 import org.apache.commons.math3.random.RandomGenerator
 
+/**
+ * A centralized particle filter implementation specifically designed for estimating the position of a movable node
+ * within a two-dimensional Euclidean environment. This class leverages a particle filter to track and estimate the
+ * position of the node based on noisy measurements and prediction steps. It operates within the context of a
+ * simulated environment and is aware of motion dynamics, measurement errors, and uniform resampling techniques.
+ *
+ * @param T the concentration type managed by the node
+ * @param environment the simulation environment in which the particle filter operates
+ * @param random an instance of a random number generator for reproducibility and stochastic processes
+ * @param node the node on which this action is executed
+ * @param sideLength the side length of the square area where particles are distributed
+ * @param numberOfParticles the number of particles used in the filter
+ * @param maxInitialSpeed the maximum initial speed of the particles; defaults to 2.0
+ */
 class CentralizedParticleFilter<T>(
     val environment: Environment<T, Euclidean2DPosition>,
     val random: RandomGenerator,

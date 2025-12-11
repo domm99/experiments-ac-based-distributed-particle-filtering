@@ -10,6 +10,13 @@ import it.unibo.filtering.getTargetPosition
 import kotlin.math.pow
 import kotlin.math.sqrt
 
+/**
+ * Computes the Euclidean distance between two 2D positions.
+ *
+ * @param pos1 the first position
+ * @param pos2 the second position
+ * @return the Euclidean distance between pos1 and pos2
+ */
 fun euclideanDistance(pos1: Euclidean2DPosition, pos2: Euclidean2DPosition): Double =
     sqrt((pos1.x - pos2.x).pow(2.0) + Math.pow((pos1.y - pos2.y), 2.0))
 

@@ -5,6 +5,14 @@ import kotlin.math.exp
 import kotlin.math.hypot
 import org.apache.commons.math3.random.RandomGenerator
 
+/**
+ * A simple Particle Filter implementation for 2D position tracking.
+ * @param numberOfParticles The number of particles to use in the filter.
+ * @param maxInitialSpeed The maximum initial speed of the particles.
+ * @param sideLength The side length of the square area where particles are initialized.
+ * @param random An instance of a random number generator.
+ * @param measurementStdDev The standard deviation of the measurement noise.
+ */
 class ParticleFilter(
     val numberOfParticles: Int = 250,
     val maxInitialSpeed: Double = 2.0,
@@ -13,7 +21,7 @@ class ParticleFilter(
     val measurementStdDev: Double = 1.0,
 ) {
 
-    var particles: List<Particle> = initParticles(sideLength)
+    private var particles: List<Particle> = initParticles(sideLength)
 
     private fun initParticles(sideLength: Double): List<Particle> = List(numberOfParticles) {
         val x = random.nextDouble(0.0, sideLength)
@@ -23,6 +31,13 @@ class ParticleFilter(
         Particle(x, y, vx, vy, 1.0 / numberOfParticles)
     }
 
+    /**
+     * Predicts the new state of the particles based on a simple motion model with added Gaussian noise.
+     * @param sampledParticles The list of particles to predict from.
+     * @param stdDev The standard deviation of the Gaussian noise to add.
+     * @param dt The time step for the prediction.
+     * @return A new list of predicted particles.
+     */
     fun predictParticles(sampledParticles: List<Particle>, stdDev: Double = 1.0, dt: Double = 1.0): List<Particle> {
         val newParticles = ArrayList<Particle>(sampledParticles.size)
         for (p in sampledParticles) {
@@ -39,6 +54,11 @@ class ParticleFilter(
         return newParticles
     }
 
+    /**
+     * Updates the weights of the particles based on the measurement.
+     * @param newParticles The list of particles to update.
+     * @param measurement The observed measurement as a Point.
+     */
     fun updateWeights(newParticles: List<Particle>, measurement: Point) {
         var totalWeight = 0.0
 
@@ -64,6 +84,10 @@ class ParticleFilter(
         particles = newParticles
     }
 
+    /**
+     * Resamples particles based on their weights using systematic resampling.
+     * @return A new list of resampled particles with reset weights.
+     */
     fun resample(): List<Particle> {
         val newParticles = ArrayList<Particle>(numberOfParticles)
         val totalWeight = particles.sumOf { it.weight }
@@ -108,6 +132,10 @@ class ParticleFilter(
         return newParticles
     }
 
+    /**
+     * Estimates the current position based on the weighted average of the particles.
+     * @return The estimated position as a Point.
+     */
     fun estimatePosition(): Point {
         var x = 0.0
         var y = 0.0

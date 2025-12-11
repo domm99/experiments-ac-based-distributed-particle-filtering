@@ -6,7 +6,7 @@ import it.unibo.alchemist.model.molecules.SimpleMolecule
 import it.unibo.alchemist.model.positions.Euclidean2DPosition
 
 /**
- * Converts a generic position in the environment to a [Euclidean2DPosition]
+ * Converts a generic position in the environment to a [Euclidean2DPosition].
  */
 fun Position<*>.toEuclidean2DPosition(): Euclidean2DPosition = Euclidean2DPosition(coordinates[0], coordinates[1])
 
