@@ -12,6 +12,7 @@ import it.unibo.filtering.ParticleFilter
 import it.unibo.filtering.Point
 import it.unibo.filtering.div
 import it.unibo.filtering.plus
+import kotlin.collections.mutableListOf
 import org.apache.commons.math3.random.RandomGenerator
 
 fun Aggregate<Int>.informationFilterEntrypoint(
@@ -28,9 +29,9 @@ fun Aggregate<*>.localFiltering(env: EnvironmentVariables, random: RandomGenerat
         val newParticles = filter.predictParticles(sampledParticles)
         filter.updateWeights(newParticles, averageNeighborhoodPoint(position))
         val estimation = filter.estimatePosition()
-        val history = env["Estimation"] as MutableList<Point>? ?: mutableListOf()
+        val history = env.getOrDefault("Estimations",  mutableListOf<Point>())
         history.add(estimation)
-        env["Estimation"] = estimation
+        env["Estimations"] = history
         filter
     }
 }
