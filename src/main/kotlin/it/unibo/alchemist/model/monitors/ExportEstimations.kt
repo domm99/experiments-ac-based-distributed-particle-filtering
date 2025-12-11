@@ -12,9 +12,14 @@ import java.util.Locale
 class ExportEstimations<T> : OutputMonitor<T, Euclidean2DPosition> {
 
     override fun finished(environment: Environment<T?, Euclidean2DPosition>, time: Time, step: Long) {
-        val filter = environment.nodes.first { it.contains(SimpleMolecule("Filter")) }
-        val estimations = filter.getConcentration(SimpleMolecule("Estimations")) as MutableList<Point>
-        exportToCsv("data/estimations.csv", estimations)
+        val filters = environment.nodes.filter { it.contains(SimpleMolecule("Filter")) }
+
+        filters.forEach { filter ->
+            val estimations = filter.getConcentration(SimpleMolecule("Estimations")) as MutableList<Point>
+            val id = filter.id
+            exportToCsv("data/estimations_node-$id.csv", estimations)
+        }
+
     }
 
     fun exportToCsv(filename: String, history: List<Point>) {
