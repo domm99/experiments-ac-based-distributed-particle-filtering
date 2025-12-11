@@ -27,7 +27,8 @@ fun Aggregate<Int>.informationFilterEntrypoint(
 }
 
 /**
- * Performs local filtering using a Particle Filter to estimate the position of a target based on neighborhood information.
+ * Performs local filtering using a Particle Filter to estimate the position
+ * of a target based on neighborhood information.
  *
  * @param env the environment variables to store estimation history
  * @param random the random generator for stochastic processes
