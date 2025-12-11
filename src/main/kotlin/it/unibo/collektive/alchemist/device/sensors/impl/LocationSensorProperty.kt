@@ -11,13 +11,13 @@ import org.apache.commons.math3.random.RandomGenerator
 
 class LocationSensorProperty<T : Any, P : Position<P>>(
     private val environment: Environment<T, P>,
-    private val random: RandomGenerator,
     override val node: Node<T>,
+    private val random: RandomGenerator,
     private val stdDev: Double = 0.5,
-) : LocationSensor,
-    NodeProperty<T> {
+) : LocationSensor, NodeProperty<T> {
+
     override fun cloneOnNewNode(node: Node<T>): NodeProperty<T> =
-        LocationSensorProperty(environment, random, node, stdDev)
+        LocationSensorProperty(environment, node, random, stdDev)
 
     override fun coordinates(): Point {
         val position = environment.getPosition(node).coordinates
