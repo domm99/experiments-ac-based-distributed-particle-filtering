@@ -1,5 +1,6 @@
 package it.unibo.collektive
 
+import it.unibo.alchemist.collektive.device.CollektiveDevice
 import it.unibo.collektive.aggregate.Field
 import it.unibo.collektive.aggregate.api.Aggregate
 import it.unibo.collektive.aggregate.api.neighboring
@@ -14,11 +15,11 @@ import it.unibo.filtering.plus
 import org.apache.commons.math3.random.RandomGenerator
 
 fun Aggregate<Int>.informationFilterEntrypoint(
+    collektiveDevice: CollektiveDevice<*>,
     env: EnvironmentVariables,
-    random: RandomGenerator,
     position: LocationSensor,
-) {
-    localFiltering(env, random, position)
+)= with(collektiveDevice){
+    localFiltering(env, randomGenerator, position)
 }
 
 fun Aggregate<*>.localFiltering(env: EnvironmentVariables, random: RandomGenerator, position: LocationSensor) {
