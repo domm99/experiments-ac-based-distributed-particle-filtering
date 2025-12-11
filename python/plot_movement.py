@@ -37,8 +37,6 @@ def generate_charts(name = ''):
 
     df_estimation = pd.read_csv(f'data/estimations{name}.csv')
 
-    Path('charts').mkdir(parents=True, exist_ok=True)
-
     plt.figure(figsize=(10, 10))
 
     plt.plot(df['PositionX'], df['PositionY'],
@@ -68,13 +66,13 @@ def generate_charts(name = ''):
 
     plt.gca().set_aspect('equal', adjustable='box')
 
-    # Mostra il grafico
     plt.tight_layout()
     plt.savefig(f'charts/trajectory{name}.pdf')
 
 if __name__ == '__main__':
 
     centralized = False
+    Path('charts').mkdir(parents=True, exist_ok=True)
 
     if centralized:
         generate_charts()
