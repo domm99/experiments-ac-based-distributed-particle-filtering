@@ -22,7 +22,7 @@ fun Aggregate<Int>.informationFilterEntrypoint(
     collektiveDevice: CollektiveDevice<*>,
     env: EnvironmentVariables,
     position: LocationSensor,
-)= with(collektiveDevice){
+) = with(collektiveDevice) {
     localFiltering(env, randomGenerator, position)
 }
 
@@ -40,7 +40,7 @@ fun Aggregate<*>.localFiltering(env: EnvironmentVariables, random: RandomGenerat
         val newParticles = filter.predictParticles(sampledParticles)
         filter.updateWeights(newParticles, averageNeighborhoodPoint(position))
         val estimation = filter.estimatePosition()
-        val history = env.getOrDefault("Estimations",  mutableListOf<Point>())
+        val history = env.getOrDefault("Estimations", mutableListOf<Point>())
         history.add(estimation)
         env["Estimations"] = history
         filter

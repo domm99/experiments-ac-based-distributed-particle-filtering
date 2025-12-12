@@ -22,7 +22,6 @@ class ExportEstimations<T> : OutputMonitor<T, Euclidean2DPosition> {
             val id = filter.id
             exportToCsv("data/estimations_node-$id.csv", estimations)
         }
-
     }
 
     /**
