@@ -16,7 +16,7 @@ fun Aggregate<Int>.convergeHistoryEntrypoint(
     position: LocationSensor,
 ): List<*> = with(collektiveDevice) {
     val leader = globalElection(localId)
-    val history = convergeSourceHistory(
+    val history = convergeHistory(
         sink = leader == localId,
         startingData = position.targetsPosition().first(),
         historySize = 5,
@@ -24,7 +24,6 @@ fun Aggregate<Int>.convergeHistoryEntrypoint(
     env["source"] = leader == localId
     env["history"] = history
     return history
-    // localFiltering(env, randomGenerator, position)
 }
 
 /**
@@ -48,48 +47,27 @@ fun <SharingData> Aggregate<Int>.convergeAllHistory(
             when {
                 historySize == null -> (acc + value)
                 else -> (acc + value).takeLast(historySize)
-            }.also { println(it) }
+            }
         },
     )
 }
 
 /**
- * Manages the evolution of shared data in an aggregate system, accumulating historical data from all nodes.
- * The [sink] knows the entire history, while the other nodes just accumulate their own data.
- * Allows limiting the size of the history.
- * @param sink A boolean indicating whether the current device acts as a sink for the data.
- * @param startingData The initial data to start the accumulation process.
- * @param historySize The maximum size of the historical data to retain. If null, the history is unbounded.
- * @return A list of accumulated historical data after convergence and evaluation.
+ * Accumulates the snapshots of the system's data over time.
+ * The [sink] retains all the system snapshots (possibly limited by [historySize]).
+ * If [historyOnlyAtSink] is false, all nodes retain their **local** history as well.
+ *
+ * @param sink a boolean indicating whether the current node is a sink in the network
+ * @param startingData the initial data to start the convergence process
+ * @param historySize the maximum size of the history to keep; if null, the history is unbounded
+ * @param historyOnlyAtSink when true, retains the history only at the sink node, otherwise retains the local history at all nodes
+ * @return a list of neighborhood history objects containing the data of neighboring nodes during convergence
  */
 inline fun <reified SharingData> Aggregate<Int>.convergeHistory(
     sink: Boolean,
     startingData: SharingData,
     historySize: Int? = null, // null means unbounded, keep all history -- careful with memory!
-): List<NeighborhoodHistory<SharingData>> =
-    evolve(listOf(NeighborhoodHistory(startingData))) { previousData ->
-        val systemSnapshot = convergeCast(
-            local = listOf(startingData),
-            sink = sink,
-            accumulateData = { acc, value ->
-                acc + value
-            },
-        )
-        (previousData + NeighborhoodHistory(systemSnapshot)).takeLast(historySize ?: Int.MAX_VALUE)
-    }
-
-/**
- * Manages the evolution of shared data in an aggregate system, accumulating historical data only at sink nodes.
- * Allows limiting the size of the history.
- * @param sink A boolean indicating whether the current device acts as a sink for the data.
- * @param startingData The initial data to start the accumulation process.
- * @param historySize The maximum size of the historical data to retain. If null, the history is unbounded.
- * @return A list of accumulated historical data after convergence and evaluation.
- */
-inline fun <reified SharingData> Aggregate<Int>.convergeSourceHistory(
-    sink: Boolean,
-    startingData: SharingData,
-    historySize: Int? = null, // null means unbounded, keep all history -- careful with memory!
+    historyOnlyAtSink: Boolean = true,
 ): List<NeighborhoodHistory<SharingData>> =
     evolve(listOf(NeighborhoodHistory(startingData))) { previousData ->
         val systemSnapshot = convergeCast(
@@ -100,11 +78,15 @@ inline fun <reified SharingData> Aggregate<Int>.convergeSourceHistory(
             },
         )
         when {
-            sink -> (previousData + NeighborhoodHistory(systemSnapshot)).takeLast(historySize ?: Int.MAX_VALUE)
+            !historyOnlyAtSink || sink -> (previousData + NeighborhoodHistory(systemSnapshot))
+                .takeLast(historySize ?: Int.MAX_VALUE)
             else -> previousData
         }
     }
 
+/**
+ * Represenation of the history of neighborhood data shared among nodes in a system.
+ */
 data class NeighborhoodHistory<SharingData>(val neighborsData: List<SharingData> = emptyList()) {
 
     constructor(data: SharingData) : this(listOf(data))
