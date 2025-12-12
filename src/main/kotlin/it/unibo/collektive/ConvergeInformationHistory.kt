@@ -85,7 +85,7 @@ inline fun <reified SharingData> Aggregate<Int>.convergeHistory(
     }
 
 /**
- * Represenation of the history of neighborhood data shared among nodes in a system.
+ * Representation of the history of [neighborsData] shared among nodes in a system.
  */
 data class NeighborhoodHistory<SharingData>(val neighborsData: List<SharingData> = emptyList()) {
 
