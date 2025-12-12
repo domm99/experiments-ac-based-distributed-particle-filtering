@@ -33,7 +33,8 @@ fun Aggregate<Int>.convergeHistoryEntrypoint(
  * @param sink A boolean indicating whether the current device acts as a sink for the data.
  * @param startingData The initial data to start the accumulation process.
  * @param historySize The maximum size of the historical data to retain. If null, the history is unbounded.
- * @return A list of accumulated historical data after convergence and evaluation.
+ * @return A FIFO list of accumulated historical data after convergence and evaluation
+ *      (first element is the oldest, last element is the most recent).
  */
 fun <SharingData> Aggregate<Int>.convergeAllHistory(
     sink: Boolean,
@@ -61,7 +62,8 @@ fun <SharingData> Aggregate<Int>.convergeAllHistory(
  * @param startingData the initial data to start the convergence process
  * @param historySize the maximum size of the history to keep; if null, the history is unbounded
  * @param historyOnlyAtSink when true, retains the history only at the sink node, otherwise retains the local history at all nodes
- * @return a list of neighborhood history objects containing the data of neighboring nodes during convergence
+ * @return a FIFO list of neighborhood history objects containing the data of neighboring nodes during convergence
+ *  (first element is the oldest, last element is the most recent).
  */
 inline fun <reified SharingData> Aggregate<Int>.convergeHistory(
     sink: Boolean,
