@@ -33,6 +33,7 @@ class CentralizedParticleFilter<T>(
     val sideLength: Double,
     val numberOfParticles: Int,
     val maxInitialSpeed: Double = 2.0,
+    val blindSpotDistance: Double = Double.MAX_VALUE,
 ) : AbstractAction<T>(node) {
     private val estimations: MutableList<Point> = mutableListOf()
     private val filter = ParticleFilter(numberOfParticles, maxInitialSpeed, sideLength, random)

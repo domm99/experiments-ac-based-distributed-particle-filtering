@@ -24,6 +24,7 @@ class LocationSensorProperty<T : Any, P : Position<P>>(
     override val node: Node<T>,
     private val random: RandomGenerator,
     private val stdDev: Double = 0.5,
+    private val blindSpotDistance: Double = Double.MAX_VALUE, // no blind spot by default
 ) : LocationSensor,
     NodeProperty<T> {
 
@@ -44,6 +45,8 @@ class LocationSensorProperty<T : Any, P : Position<P>>(
             node.contains(SimpleMolecule("Movable"))
         }.map { target ->
             environment.getPosition(target)
+        }.filter { position ->
+            position.distanceTo(environment.getPosition(node)) <= blindSpotDistance
         }.map { position ->
             val newX = position.coordinates[0] + (random.nextGaussian() * stdDev)
             val newY = position.coordinates[1] + (random.nextGaussian() * stdDev)
