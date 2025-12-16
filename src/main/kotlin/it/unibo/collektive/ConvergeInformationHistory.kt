@@ -39,17 +39,12 @@ fun Aggregate<Int>.convergeHistoryEntrypoint(
 fun <SharingData> Aggregate<Int>.convergeAllHistory(
     sink: Boolean,
     startingData: SharingData,
-    historySize: Int? = null, // null means unbounded, keep all history -- careful with memory!
+    historySize: Int = Int.MAX_VALUE, // default means unbounded, keep all history -- careful with memory!
 ): List<SharingData> = evolve(listOf(startingData)) { data ->
     convergeCast(
         local = data,
         sink = sink,
-        accumulateData = { acc, value ->
-            when {
-                historySize == null -> (acc + value)
-                else -> (acc + value).takeLast(historySize)
-            }
-        },
+        accumulateData = { acc, value -> (acc + value).takeLast(historySize) },
     )
 }
 
@@ -68,7 +63,7 @@ fun <SharingData> Aggregate<Int>.convergeAllHistory(
 inline fun <reified SharingData> Aggregate<Int>.convergeHistory(
     sink: Boolean,
     startingData: SharingData,
-    historySize: Int? = null, // null means unbounded, keep all history -- careful with memory!
+    historySize: Int = Int.MAX_VALUE, // default means unbounded, keep all history -- careful with memory!
     historyOnlyAtSink: Boolean = true,
 ): List<NeighborhoodHistory<SharingData>> =
     evolve(listOf(NeighborhoodHistory(startingData))) { previousData ->
@@ -81,7 +76,7 @@ inline fun <reified SharingData> Aggregate<Int>.convergeHistory(
         )
         when {
             !historyOnlyAtSink || sink -> (previousData + NeighborhoodHistory(systemSnapshot))
-                .takeLast(historySize ?: Int.MAX_VALUE)
+                .takeLast(historySize)
             else -> previousData
         }
     }
