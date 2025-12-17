@@ -17,7 +17,6 @@ import it.unibo.collektive.networking.NeighborsData
 import it.unibo.collektive.networking.NoNeighborsData
 import it.unibo.collektive.networking.OutboundEnvelope
 import it.unibo.collektive.path.Path
-import kotlin.math.truncate
 import org.apache.commons.math3.random.RandomGenerator
 
 /**
