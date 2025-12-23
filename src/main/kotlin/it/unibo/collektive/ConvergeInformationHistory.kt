@@ -6,6 +6,33 @@ import it.unibo.collektive.alchemist.device.sensors.EnvironmentVariables
 import it.unibo.collektive.alchemist.device.sensors.LocationSensor
 import it.unibo.collektive.stdlib.accumulation.convergeCast
 import it.unibo.collektive.stdlib.consensus.globalElection
+import it.unibo.collektive.stdlib.processes.timeReplicated
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.ExperimentalTime
+import kotlin.time.Instant
+
+@OptIn(ExperimentalTime::class)
+fun Aggregate<Int>.replicatedConvergeCast(
+    dev: CollektiveDevice<*>,
+    env: EnvironmentVariables,
+    position: LocationSensor,
+) {
+    val currentInstant: Instant = Instant.fromEpochSeconds(dev.currentTime.toDouble().toLong())
+    val leader = globalElection(localId)
+    val replicaList = timeReplicated(
+        currentTime = currentInstant,
+        maxReplicas = 4,
+        timeToSpawn = 3.seconds,
+        process = {
+            convergeAllHistory(
+                sink = leader == localId,
+                startingData = position.targetsPosition().first(),
+                historySize = dev.environment.nodeCount,
+            )
+        },
+    )
+    env["replicas"] = replicaList
+}
 
 /**
  * todo.
@@ -77,6 +104,7 @@ inline fun <reified SharingData> Aggregate<Int>.convergeHistory(
         when {
             !historyOnlyAtSink || sink -> (previousData + NeighborhoodHistory(systemSnapshot))
                 .takeLast(historySize)
+
             else -> previousData
         }
     }
