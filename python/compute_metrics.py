@@ -72,7 +72,7 @@ def plot_rmse_over_time(RMSE_n):
 
 if __name__ == '__main__':
 
-    csv_file = 'data/experiment.csv'
+    csv_file = 'data/track-movement-distributed/track-movement-distributed_numberOfParticles-250_maxInitialSpeed-2.0.csv'
     max_simulation_time = 3000
     Path('charts').mkdir(parents=True, exist_ok=True)
 
