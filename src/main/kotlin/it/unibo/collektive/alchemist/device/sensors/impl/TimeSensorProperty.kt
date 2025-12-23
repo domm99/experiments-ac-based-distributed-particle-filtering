@@ -9,6 +9,14 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
+/**
+ * A property representing a time sensor for a node in an Alchemist environment.
+ *
+ * @param T the concentration type managed by the node
+ * @param P the position type used in the environment
+ * @property environment the simulation environment
+ * @property node the node associated with this sensor property
+ */
 class TimeSensorProperty<T : Any, P : Position<P>>(
     private val environment: Environment<T, P>,
     override val node: Node<T>,

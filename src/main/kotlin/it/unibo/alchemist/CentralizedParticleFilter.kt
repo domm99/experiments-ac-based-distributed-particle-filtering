@@ -25,6 +25,7 @@ import org.apache.commons.math3.random.RandomGenerator
  * @param sideLength the side length of the square area where particles are distributed
  * @param numberOfParticles the number of particles used in the filter
  * @param maxInitialSpeed the maximum initial speed of the particles; defaults to 2.0
+ * @param blindSpotDistance the max distance at which the sensor can sense.
  */
 class CentralizedParticleFilter<T>(
     val environment: Environment<T, Euclidean2DPosition>,

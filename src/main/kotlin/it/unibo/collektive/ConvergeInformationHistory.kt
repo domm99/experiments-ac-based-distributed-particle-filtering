@@ -11,6 +11,9 @@ import kotlin.time.Duration.Companion.seconds
 import kotlin.time.ExperimentalTime
 import kotlin.time.Instant
 
+/**
+ * todo.
+ */
 @OptIn(ExperimentalTime::class)
 fun Aggregate<Int>.replicatedConvergeCast(
     dev: CollektiveDevice<*>,
@@ -83,7 +86,8 @@ fun <SharingData> Aggregate<Int>.convergeAllHistory(
  * @param sink a boolean indicating whether the current node is a sink in the network
  * @param startingData the initial data to start the convergence process
  * @param historySize the maximum size of the history to keep; if null, the history is unbounded
- * @param historyOnlyAtSink when true, retains the history only at the sink node, otherwise retains the local history at all nodes
+ * @param historyOnlyAtSink when true, retains the history only at the sink node,
+ * otherwise retains the local history at all nodes
  * @return a FIFO list of neighborhood history objects containing the data of neighboring nodes during convergence
  *  (first element is the oldest, last element is the most recent).
  */

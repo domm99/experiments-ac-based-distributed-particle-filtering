@@ -8,6 +8,9 @@ import it.unibo.filtering.ParticleFilter
 import it.unibo.filtering.Point
 import org.apache.commons.math3.random.RandomGenerator
 
+/**
+ * todo.
+ */
 fun Aggregate<Int>.boolSensingEntrypoint(
     collektiveDevice: CollektiveDevice<*>,
     env: EnvironmentVariables,
