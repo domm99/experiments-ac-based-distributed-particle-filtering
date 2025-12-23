@@ -4,15 +4,12 @@ import it.unibo.alchemist.collektive.device.CollektiveDevice
 import it.unibo.collektive.aggregate.Field
 import it.unibo.collektive.aggregate.api.Aggregate
 import it.unibo.collektive.aggregate.api.neighboring
-import it.unibo.collektive.aggregate.values
 import it.unibo.collektive.alchemist.device.sensors.EnvironmentVariables
 import it.unibo.collektive.alchemist.device.sensors.LocationSensor
-import it.unibo.collektive.stdlib.collapse.reduce
 import it.unibo.filtering.ParticleFilter
 import it.unibo.filtering.Point
 import it.unibo.filtering.div
 import it.unibo.filtering.plus
-import kotlin.collections.mutableListOf
 import org.apache.commons.math3.random.RandomGenerator
 
 /**
@@ -22,30 +19,30 @@ fun Aggregate<Int>.informationFilterEntrypoint(
     collektiveDevice: CollektiveDevice<*>,
     env: EnvironmentVariables,
     position: LocationSensor,
-) = with(collektiveDevice) {
-    localFiltering(env, randomGenerator, position)
+) = context(env, collektiveDevice.randomGenerator, position) {
+    val estimations = env.getOrDefault("Estimations", listOf<Point>())
+    localFiltering(estimations, env["NumberOfParticles"], env["MaxInitialSpeed"], env["SideLength"]).also { history ->
+        env["Estimations"] = history
+    }
 }
 
 /**
  * Performs local filtering using a Particle Filter to estimate the position
  * of a target based on neighborhood information.
  *
- * @param env the environment variables to store estimation history
  * @param random the random generator for stochastic processes
  * @param position the location sensor providing target position and neighborhood data
  */
-fun Aggregate<*>.localFiltering(env: EnvironmentVariables, random: RandomGenerator, position: LocationSensor) {
-    evolve(ParticleFilter(250, 2.0, 100.0, random)) { filter ->
+context(random: RandomGenerator, position: LocationSensor)
+fun Aggregate<*>.localFiltering(estimationsHistory: List<Point>, numberOfParticles: Int, maxInitialSpeed: Double, sideLength: Double): List<Point> =
+    evolving(ParticleFilter(numberOfParticles, maxInitialSpeed, sideLength, random)) { filter ->
         val sampledParticles = filter.resample()
         val newParticles = filter.predictParticles(sampledParticles)
-        filter.updateWeights(newParticles, averageNeighborhoodPoint(position))
+        filter.updateWeights(newParticles, averageNeighborhoodPoint())
         val estimation = filter.estimatePosition()
-        val history = env.getOrDefault("Estimations", mutableListOf<Point>())
-        history.add(estimation)
-        env["Estimations"] = history
-        filter
+        val history = estimationsHistory + estimation
+        filter.yielding { history }
     }
-}
 
 /**
  * Calculates the average position of the neighborhood perception of the target position, given by the location sensor.
@@ -53,10 +50,13 @@ fun Aggregate<*>.localFiltering(env: EnvironmentVariables, random: RandomGenerat
  * @param position the location sensor that provides the target position and its neighborhood information
  * @return the average position of the neighboring points
  */
-fun Aggregate<*>.averageNeighborhoodPoint(position: LocationSensor): Point {
-    val targetPosition: Point = position.targetsPosition().first()
-    val neighborsTargetPosition: Field<*, Point> = neighboring(targetPosition)
-    val size = neighborsTargetPosition.all.size.toDouble()
-    val averagePosition: Point = neighborsTargetPosition.all.values.reduce(Point::plus) / size
-    return averagePosition
+context(position: LocationSensor)
+fun Aggregate<*>.averageNeighborhoodPoint(): Point? {
+    val targetPosition: Point? = position.targetsPosition().firstOrNull()
+    val neighborsTargetPosition: Field<*, Point?> = neighboring(targetPosition)
+    val neighborsNonNullPoint = neighborsTargetPosition.all.list.mapNotNull { it.value }
+    return when {
+        neighborsNonNullPoint.isEmpty() -> null
+        else -> neighborsNonNullPoint.reduce(Point::plus) / neighborsNonNullPoint.size.toDouble()
+    }
 }
