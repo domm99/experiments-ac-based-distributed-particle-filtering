@@ -4,7 +4,7 @@ import it.unibo.alchemist.model.Environment
 import it.unibo.alchemist.model.Position
 import org.apache.commons.math3.random.RandomGenerator
 
-class Gaussian<P: Position<P>>(
+class Gaussian<P : Position<P>>(
     environment: Environment<Any, P>,
     randomGenerator: RandomGenerator,
     nodes: Int,
@@ -20,5 +20,4 @@ class Gaussian<P: Position<P>>(
         val finalY = centerY + (gaussianY * stddev)
         return makePosition(finalX, finalY)
     }
-
 }

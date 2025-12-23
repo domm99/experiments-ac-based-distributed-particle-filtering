@@ -34,7 +34,6 @@ fun Aggregate<*>.sharedTimeLeftTo(now: Instant, timeToWait: Duration): Duration 
     (if (result <= ZERO) timeToWait else result).yielding { result }
 }
 
-
 /**
  * Calculates the time passed since the last execution round, provided the current time ([now]).
  * The duration is always coerced to positive or zero.

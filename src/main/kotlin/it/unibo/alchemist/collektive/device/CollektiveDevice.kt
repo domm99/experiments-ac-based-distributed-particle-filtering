@@ -56,7 +56,7 @@ class CollektiveDevice<P>(
     private val validMessages: MutableMap<Int, TimedMessage> = mutableMapOf()
 
     private fun receiveMessage(time: Time, message: Message<Int, *>) {
-        when(shouldLoose(lossProbability)) {
+        when (shouldLoose(lossProbability)) {
             true -> validMessages
             else -> validMessages += message.senderId to TimedMessage(time, message)
         }
@@ -107,6 +107,7 @@ class CollektiveDevice<P>(
         val messages: Map<Int, Message<Int, *>> =
             when {
                 retainMessagesFor == null -> validMessages.mapValues { it.value.payload }.also { validMessages.clear() }
+
                 else -> {
                     validMessages.values.retainAll { it.receivedAt + retainMessagesFor >= currentTime }
                     validMessages.mapValues { it.value.payload }
