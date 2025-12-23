@@ -34,15 +34,19 @@ fun Aggregate<Int>.informationFilterEntrypoint(
  * @param position the location sensor providing target position and neighborhood data
  */
 context(random: RandomGenerator, position: LocationSensor)
-fun Aggregate<*>.localFiltering(estimationsHistory: List<Point>, numberOfParticles: Int, maxInitialSpeed: Double, sideLength: Double): List<Point> =
-    evolving(ParticleFilter(numberOfParticles, maxInitialSpeed, sideLength, random)) { filter ->
-        val sampledParticles = filter.resample()
-        val newParticles = filter.predictParticles(sampledParticles)
-        filter.updateWeights(newParticles, averageNeighborhoodPoint())
-        val estimation = filter.estimatePosition()
-        val history = estimationsHistory + estimation
-        filter.yielding { history }
-    }
+fun Aggregate<*>.localFiltering(
+    estimationsHistory: List<Point>,
+    numberOfParticles: Int,
+    maxInitialSpeed: Double,
+    sideLength: Double,
+): List<Point> = evolving(ParticleFilter(numberOfParticles, maxInitialSpeed, sideLength, random)) { filter ->
+    val sampledParticles = filter.resample()
+    val newParticles = filter.predictParticles(sampledParticles)
+    filter.updateWeights(newParticles, averageNeighborhoodPoint())
+    val estimation = filter.estimatePosition()
+    val history = estimationsHistory + estimation
+    filter.yielding { history }
+}
 
 /**
  * Calculates the average position of the neighborhood perception of the target position, given by the location sensor.

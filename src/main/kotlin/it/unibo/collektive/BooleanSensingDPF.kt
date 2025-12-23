@@ -14,7 +14,12 @@ fun Aggregate<Int>.boolSensingEntrypoint(
     presenceSensor: PresenceSensor,
 ) = context(env, collektiveDevice.randomGenerator, presenceSensor) {
     val estimations = env.getOrDefault("Estimations", listOf<Point>())
-    booleanLocalFiltering(estimations, env["NumberOfParticles"], env["MaxInitialSpeed"], env["SideLength"]).also { history ->
+    booleanLocalFiltering(
+        estimations,
+        env["NumberOfParticles"],
+        env["MaxInitialSpeed"],
+        env["SideLength"],
+    ).also { history ->
         env["Estimations"] = history
     }
 }
