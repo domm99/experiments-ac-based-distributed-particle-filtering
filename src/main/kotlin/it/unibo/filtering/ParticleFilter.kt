@@ -59,28 +59,19 @@ class ParticleFilter(
      * @param newParticles The list of particles to update.
      * @param measurement The observed measurement as a Point.
      */
-    fun updateWeights(newParticles: List<Particle>, measurement: Point) {
-        var totalWeight = 0.0
-
-        newParticles.forEach { p ->
-            val dist = hypot(p.x - measurement.x, p.y - measurement.y)
-            // P(z|x) ~ exp(-dist^2 / (2 * sigma^2))
-            val likelihood = exp(-0.5 * (dist * dist) / (measurementStdDev * measurementStdDev))
-            p.weight = likelihood
-            totalWeight += likelihood
-        }
-
-        // Weights normalization
-        if (totalWeight > 0.0) {
-            for (p in newParticles) {
-                p.weight /= totalWeight
+    fun updateWeights(newParticles: List<Particle>, measurement: Point?) {
+        val uniformWeight = 1.0 / numberOfParticles
+        measurement?.let { m ->
+            val likelihoods = newParticles.map { particle ->
+                val dist = hypot(particle.x - m.x, particle.y - m.y)
+                exp(-0.5 * (dist * dist) / (measurementStdDev * measurementStdDev))
             }
-        } else {
-            val uniformWeight = 1.0 / numberOfParticles
-            for (p in newParticles) {
-                p.weight = uniformWeight
+            val total = likelihoods.sum()
+            when {
+                total > 0.0 -> newParticles.zip(likelihoods).forEach { (p, l) -> p.weight = l / total }
+                else -> newParticles.forEach { it.weight = uniformWeight }
             }
-        }
+        } ?: newParticles.forEach { it.weight = uniformWeight }
         particles = newParticles
     }
 
@@ -146,3 +137,39 @@ class ParticleFilter(
         return Point(x, y)
     }
 }
+
+/*
+ * fun oldUpdateWeights(newParticles: List<Particle>, measurement: Point?) {
+ *         if (measurement == null) {
+ *             val uniformWeight = 1.0 / numberOfParticles
+ *             for (p in newParticles) {
+ *                 p.weight = uniformWeight
+ *             }
+ *             particles = newParticles
+ *             return
+ *         }
+ *
+ *         var totalWeight = 0.0
+ *
+ *         newParticles.forEach { p ->
+ *             val dist = hypot(p.x - measurement.x, p.y - measurement.y)
+ *             // P(z|x) ~ exp(-dist^2 / (2 * sigma^2))
+ *             val likelihood = exp(-0.5 * (dist * dist) / (measurementStdDev * measurementStdDev))
+ *             p.weight = likelihood
+ *             totalWeight += likelihood
+ *         }
+ *
+ *         // Weights normalization
+ *         if (totalWeight > 0.0) {
+ *             for (p in newParticles) {
+ *                 p.weight /= totalWeight
+ *             }
+ *         } else {
+ *             val uniformWeight = 1.0 / numberOfParticles
+ *             for (p in newParticles) {
+ *                 p.weight = uniformWeight
+ *             }
+ *         }
+ *         particles = newParticles
+ *     }
+ */
