@@ -31,6 +31,8 @@ class ParticleFilter(
         Particle(x, y, vx, vy, 1.0 / numberOfParticles)
     }
 
+    fun getAll(): List<Particle> = particles
+
     /**
      * Predicts the new state of the particles based on a simple motion model with added Gaussian noise.
      * @param sampledParticles The list of particles to predict from.
