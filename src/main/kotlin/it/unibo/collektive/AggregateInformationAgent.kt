@@ -6,6 +6,7 @@ import it.unibo.collektive.aggregate.api.Aggregate
 import it.unibo.collektive.aggregate.api.neighboring
 import it.unibo.collektive.alchemist.device.sensors.EnvironmentVariables
 import it.unibo.collektive.alchemist.device.sensors.LocationSensor
+import it.unibo.filtering.Particle
 import it.unibo.filtering.ParticleFilter
 import it.unibo.filtering.Point
 import it.unibo.filtering.div
@@ -33,13 +34,17 @@ fun Aggregate<Int>.informationFilterEntrypoint(
  * @param random the random generator for stochastic processes
  * @param position the location sensor providing target position and neighborhood data
  */
-context(random: RandomGenerator, position: LocationSensor)
+context(random: RandomGenerator, position: LocationSensor, env: EnvironmentVariables)
 fun Aggregate<*>.localFiltering(
     estimationsHistory: List<Point>,
     numberOfParticles: Int,
     maxInitialSpeed: Double,
     sideLength: Double,
 ): List<Point> = evolving(ParticleFilter(numberOfParticles, maxInitialSpeed, sideLength, random)) { filter ->
+    val previous = env.getOrDefault("Particles", mutableListOf<List<Particle>>())
+    env["NumberOfParticles"] = numberOfParticles
+    previous.add(filter.getAll())
+    env["Particles"] = previous
     val sampledParticles = filter.resample()
     val newParticles = filter.predictParticles(sampledParticles)
     filter.updateWeights(newParticles, averageNeighborhoodPoint())
