@@ -30,29 +30,20 @@ class ExportEstimations<T> : OutputMonitor<T, Euclidean2DPosition> {
                 estimations.map { Line(it.x, it.y) }
             )
 
-            try {
-                val numberOfParticles = filter.getConcentration(SimpleMolecule("NumberOfParticles")) as Int
-                val particles = filter.getConcentration(SimpleMolecule("Particles")) as MutableList<MutableList<Particle>>
-                val header = (0 until numberOfParticles).joinToString(",") { "p_$it-X,p_$it-Y,p_$it-vX,p_$it-vY,p_$it-W" }
-                println("HEADER ${header.split(",").size}")
-                val format = (0 until numberOfParticles).joinToString(",") { "%.4f,%.4f,%.4f,%.4f,%.4f" }
-                val hist = particles.map { particleList ->
-                    val coordinates = particleList.flatMap { listOf(it.x, it.y, it.vx, it.vy, it.weight) }.toTypedArray()
-                    Line(*coordinates)
-                }
-                println("------------------------------------------------------------------------------------")
-                println(hist[0].values.size)
-                println("------------------------------------------------------------------------------------")
-                exportToCsv(
-                    "data/particles_node-$id.csv",
-                    header,
-                    format,
-                    hist
-                )
-            }catch (e: Exception) {
-                print(e)
+            val numberOfParticles = filter.getConcentration(SimpleMolecule("NumberOfParticles")) as Int
+            val particles = filter.getConcentration(SimpleMolecule("Particles")) as MutableList<MutableList<Particle>>
+            val header = (0 until numberOfParticles).joinToString(",") { "p_$it-X,p_$it-Y,p_$it-vX,p_$it-vY,p_$it-W" }
+            val format = (0 until numberOfParticles).joinToString(",") { "%.4f,%.4f,%.4f,%.4f,%.4f" }
+            val hist = particles.map { particleList ->
+                val coordinates = particleList.flatMap { listOf(it.x, it.y, it.vx, it.vy, it.weight) }.toTypedArray()
+                Line(*coordinates)
             }
-
+            exportToCsv(
+                "data/particles_node-$id.csv",
+                header,
+                format,
+                hist
+            )
         }
     }
 
@@ -66,10 +57,8 @@ class ExportEstimations<T> : OutputMonitor<T, Euclidean2DPosition> {
             // Header
             out.println(header)
 
-            println("FORMAT ${format.split(",").size}")
             // Data
             history.forEach { step ->
-                println("STEP ${step.values.size}")
                 val line = String.format(
                     Locale.US,
                     format,
