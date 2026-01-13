@@ -8,6 +8,7 @@ import it.unibo.alchemist.model.Reaction
 import it.unibo.alchemist.model.actions.AbstractAction
 import it.unibo.alchemist.model.molecules.SimpleMolecule
 import it.unibo.alchemist.model.positions.Euclidean2DPosition
+import it.unibo.filtering.Particle
 import it.unibo.filtering.ParticleFilter
 import it.unibo.filtering.Point
 import org.apache.commons.math3.random.RandomGenerator
@@ -37,6 +38,7 @@ class CentralizedParticleFilter<T>(
     val blindSpotDistance: Double = Double.MAX_VALUE,
 ) : AbstractAction<T>(node) {
     private val estimations: MutableList<Point> = mutableListOf()
+    private val allHistory = mutableListOf<List<Particle>>()
     private val filter = ParticleFilter(numberOfParticles, maxInitialSpeed, sideLength, random)
 
     private fun measurePosition(stdDev: Double = 0.5): Point {
@@ -48,6 +50,8 @@ class CentralizedParticleFilter<T>(
     }
 
     override fun execute() {
+        allHistory.add(filter.getAll())
+        node.setConcentration(SimpleMolecule("Particles"), allHistory as T)
         val position = measurePosition()
         val sampledParticles = filter.resample()
         val newParticles = filter.predictParticles(sampledParticles)
@@ -55,6 +59,7 @@ class CentralizedParticleFilter<T>(
         val estimation = filter.estimatePosition()
         estimations.add(estimation)
         node.setConcentration(SimpleMolecule("Estimations"), estimations as T)
+        node.setConcentration(SimpleMolecule("NumberOfParticles"), filter.numberOfParticles as T)
     }
 
     override fun getContext(): Context = Context.LOCAL
