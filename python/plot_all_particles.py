@@ -1,15 +1,48 @@
+import re
 import numpy as np
 import pandas as pd
 from pathlib import Path
 import matplotlib.pyplot as plt
 
-def plot_particle_estimates(df, step=100, output_dir=None):
+
+def openCsv(path):
+    regex = re.compile('\d')
+    with open(path, 'r') as file:
+        lines = filter(lambda x: regex.match(x[0]), file.readlines())
+        return [[float(x) for x in line.split()] for line in lines]
+
+def extractVariableNames(filename):
+    with open(filename, 'r') as file:
+        dataBegin = re.compile('\d')
+        lastHeaderLine = ''
+        for line in file:
+            if dataBegin.match(line[0]):
+                break
+            else:
+                lastHeaderLine = line
+        if lastHeaderLine:
+            regex = re.compile(' (?P<varName>\S+)')
+            return regex.findall(lastHeaderLine)
+        return []
+
+def read_alchemist_csv(path):
+    lines = np.matrix(openCsv(path))
+    vars =  extractVariableNames(path)
+    vars = [v.split('[')[0] for v in vars]
+    df = pd.DataFrame(data=lines, columns=vars)
+    df = df.dropna()
+    return df
+
+
+def plot_particle_estimates(df, df_real, step=100, output_dir=None):
 
     num_particles = 250
     indices_to_plot = range(0, len(df), step)
 
     for row_idx in indices_to_plot:
         row = df.iloc[row_idx]
+
+        row_real = df_real.iloc[row_idx]
 
         plt.figure(figsize=(10, 8))
 
@@ -28,27 +61,35 @@ def plot_particle_estimates(df, step=100, output_dir=None):
 
         sizes = [max(0.1, weight * 1000) for weight in ws]
 
-        plt.scatter(xs, ys, s=sizes, alpha=0.6, edgecolors='none', color='blue')
+
+
+        plt.scatter(xs, ys, s=sizes, alpha=0.6, edgecolors='none', color='blue', zorder=1)
+        plt.scatter(row_real['PositionX'], row_real['PositionY'], s=30, edgecolors='none', color='red', zorder=2)
 
         plt.title(f"Particle Filter Distribution - Timestep {row_idx}")
         plt.xlabel("X (m)")
         plt.ylabel("Y (m)")
         plt.grid(True, linestyle='--', alpha=0.5)
 
+        plt.ylim(0, 100)
+        plt.xlim(0, 100)
+
         filename = f"{output_dir}step_{row_idx}.pdf"
         plt.savefig(filename)
-        plt.close() # Chiude la figura per liberare memoria
+        plt.close()
 
 if __name__ == '__main__':
     charts_path = 'charts/allparticles/'
     Path(charts_path).mkdir(parents=True, exist_ok=True)
 
-    nodes = 4
+    nodes = 1
 
     for i in range(nodes):
         path = f'{charts_path}/node-{i}/'
         Path(path).mkdir(parents=True, exist_ok=True)
 
-        df = pd.read_csv(f'data/particles_node-{i}.csv')
+        df_particles = pd.read_csv(f'data/particles_node-{i}.csv')
+        df_real = read_alchemist_csv('data/experiment.csv')
 
-        plot_particle_estimates(df, 100, path)
+
+        plot_particle_estimates(df_particles, df_real, 100, path)
