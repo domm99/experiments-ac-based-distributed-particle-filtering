@@ -26,7 +26,7 @@ def extractVariableNames(filename):
             return regex.findall(lastHeaderLine)
         return []
 
-def compute_metrics(true_df, estimates, lost_thresh=5.0):
+def compute_metrics(true_df, estimates, lost_thresh=4):
 
     true_pos = true_df.values
     T = len(true_pos)
