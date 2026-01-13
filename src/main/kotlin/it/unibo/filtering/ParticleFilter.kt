@@ -75,8 +75,9 @@ class ParticleFilter(
             val dist = hypot(particle.x - measurement.x, particle.y - measurement.y)
             // P(z|x) ~ exp(-dist^2 / (2 * sigma^2))
             val likelihood = exp(-0.5 * (dist * dist) / (measurementStdDev * measurementStdDev))
-            particle.weight = likelihood
-            totalWeight += likelihood
+            val newW = likelihood * particle.weight
+            particle.weight = newW
+            totalWeight += newW
         }
         // Weights normalization
         if (totalWeight > 0.0) {
