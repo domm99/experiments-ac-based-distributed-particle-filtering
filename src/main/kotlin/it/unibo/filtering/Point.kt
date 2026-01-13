@@ -6,7 +6,16 @@ package it.unibo.filtering
  * @property x The x-coordinate of the point.
  * @property y The y-coordinate of the point.
  */
-data class Point(val x: Double, val y: Double)
+data class Point(val x: Double, val y: Double) : Comparable<Point> {
+    override fun compareTo(other: Point): Int =
+        when {
+            x < other.x -> -1
+            x > other.x -> 1
+            y < other.y -> -1
+            y > other.y -> 1
+            else -> 0
+        }
+}
 
 /**
  * A data class representing a particle in a Particle Filter.
