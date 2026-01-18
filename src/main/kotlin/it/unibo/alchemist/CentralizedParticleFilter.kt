@@ -64,10 +64,10 @@ class CentralizedParticleFilter<T>(
 
     override fun getContext(): Context = Context.LOCAL
 
-    override fun cloneAction(node: Node<T?>?, reaction: Reaction<T?>?): Action<T?>? = CentralizedParticleFilter(
+    override fun cloneAction(node: Node<T>, reaction: Reaction<T>): Action<T> = CentralizedParticleFilter(
         environment,
         random,
-        node!! as Node<T>,
+        node,
         sideLength,
         numberOfParticles,
         maxInitialSpeed,
