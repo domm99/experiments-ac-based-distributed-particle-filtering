@@ -72,11 +72,11 @@ def generate_charts(name = ''):
 
 if __name__ == '__main__':
 
-    centralized = False
+    centralized = True
     Path('charts').mkdir(parents=True, exist_ok=True)
 
     if centralized:
-        generate_charts()
+        generate_charts(name='_node-0')
     else:
         num_nodes = 4
         for i in range(num_nodes):

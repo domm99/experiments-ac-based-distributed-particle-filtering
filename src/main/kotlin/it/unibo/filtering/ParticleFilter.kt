@@ -3,6 +3,7 @@ package it.unibo.filtering
 import it.unibo.alchemist.util.RandomGenerators.nextDouble
 import kotlin.math.exp
 import kotlin.math.hypot
+import kotlin.math.pow
 import org.apache.commons.math3.random.RandomGenerator
 
 /**
@@ -61,18 +62,14 @@ class ParticleFilter(
      * @param newParticles The list of particles to update.
      * @param measurement The observed measurement as a Point.
      */
-    fun updateWeights(newParticles: List<Particle>, measurement: Point?) {
-        if (measurement == null) {
-            val uniformWeight = 1.0 / numberOfParticles
-            for (p in newParticles) {
-                p.weight = uniformWeight
-            }
-            particles = newParticles
-            return
-        }
+    fun updateWeights(newParticles: List<Particle>, measurement: Double, sensorPosition: Point) {
         var totalWeight = 0.0
+
         newParticles.forEach { particle ->
-            val dist = hypot(particle.x - measurement.x, particle.y - measurement.y)
+
+            val d = hypot(particle.x - sensorPosition.x, particle.y - sensorPosition.y).coerceAtLeast(1.0)
+            val expectedMeasure = 10 / d.pow(2)
+            val dist = measurement - expectedMeasure
             // P(z|x) ~ exp(-dist^2 / (2 * sigma^2))
             val likelihood = exp(-0.5 * (dist * dist) / (measurementStdDev * measurementStdDev))
             val newW = likelihood * particle.weight
