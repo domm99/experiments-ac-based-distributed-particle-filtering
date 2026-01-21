@@ -4,26 +4,13 @@ _constants:
   measurementStdDev: &measurementStdDev 2.0
 
 variables:
-  numberOfParticles: &numberOfParticles
-    type: ArbitraryVariable
-    parameters: [ 250, [ 50, 100, 250, 500 ] ]
-  maxInitialSpeed: &maxInitialSpeed
-    type: ArbitraryVariable
-    parameters: [ 2.0, [ 0.5, 1.0, 2.0, 5.0 ] ]
-  neighboringDistance: &neighboringDistance
-    type: ArbitraryVariable
-    parameters: [ 10000.0, [ 55.0, 75.0, 100.0, 150.0, 200.0 ] ]
-  blindSpotDistance: &blindSpotDistance
-    type: ArbitraryVariable
-    parameters: [ 5.0, [2.0, 5.0, 10.0, 25.0, 50.0, 100.0] ]
-  numberOfSensorsForSide: &numberOfSensorsForSide
-    type: ArbitraryVariable
-    parameters: [3, [1, 2, 3, 4, 5, 10]]
-  stepLength: &stepLength
-    type: ArbitraryVariable
-    parameters: [50]
+  numberOfParticles: &numberOfParticles 250
+  maxInitialSpeed: &maxInitialSpeed 2.0
+  neighboringDistance: &neighboringDistance 55.0
+  numberOfSensorsForSide: &numberOfSensorsForSide 3
+  stepLength: &stepLength 50
   size: &size
-    formula: stepLength * numberOfSensorsForSide
+    formula: 3 * 50
   seed: &seed
     min: 0
     max: 42
@@ -36,14 +23,14 @@ seeds:
 
 network-model:
   type: ConnectWithinDistance
-  parameters: [*neighboringDistance]
+  parameters: [ *neighboringDistance ]
 
 _pool: &program
   - time-distribution: 1
     type: Event
     actions:
       - type: RunCollektiveProgram
-        parameters: [it.unibo.collektive.AggregateInformationAgentKt.informationFilterEntrypoint]
+        parameters: [ it.unibo.collektive.AggregateInformationAgentKt.informationFilterEntrypoint ]
 
 _movement: &movement
   - time-distribution: 1
@@ -68,12 +55,10 @@ deployments:
         concentration: *maxInitialSpeed
       - molecule: SideLength
         concentration: *size
-      - molecule: BlindSpotDistance
-        concentration: *blindSpotDistance
     programs: *program
     properties:
       - type: it.unibo.collektive.alchemist.device.sensors.impl.LocationSensorProperty
-        parameters: [*measurementStdDev, *blindSpotDistance ]
+        parameters: [ *measurementStdDev ]
 
   - type: Point
     parameters: [ 0, 0 ]
@@ -85,7 +70,7 @@ deployments:
 
 launcher:
   parameters:
-    batch: [seed, numberOfParticles, maxInitialSpeed, neighboringDistance, blindSpotDistance, numberOfSensorsForSide]
+    batch: [ seed ]
     showProgress: true
     autoStart: true
 
@@ -98,11 +83,11 @@ export:
     data:
       - time
       - molecule: PositionX
-        aggregators: [mean]
+        aggregators: [ mean ]
         value-filter: onlyFinite
         precision: 3
       - molecule: PositionY
-        aggregators: [mean]
+        aggregators: [ mean ]
         value-filter: onlyfinite
 
 terminate:
