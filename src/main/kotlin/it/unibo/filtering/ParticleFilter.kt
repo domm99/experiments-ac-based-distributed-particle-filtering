@@ -85,6 +85,7 @@ class ParticleFilter(
                 newW += likelihood
             }
             totalWeight += newW
+            particle.weight = newW
         }
         // Weights normalization
         if (totalWeight > 0.0) {
