@@ -25,7 +25,7 @@ def extractVariableNames(filename):
         return []
 
 def generate_charts(name = ''):
-    csv_file = 'data/track-movement-neighboring-aggregation/track-movement-neighboring-aggregation_numberOfParticles-250_maxInitialSpeed-2.0_neighboringDistance-200.0_blindSpotDistance-5.0_numberOfSensorsForSide-3_stepLength-50_seed-42.0.csv'
+    csv_file = 'data/track-movement-neighboring-aggregation/track-movement-neighboring-aggregation_numberOfParticles-500_maxInitialSpeed-2.0_neighboringDistance-10000.0_blindSpotDistance-5.0_numberOfSensorsForSide-3_stepLength-50_seed-42.0.csv'
     # csv_file = 'data/experiment.csv'
 
     lines = np.matrix(openCsv(csv_file))
