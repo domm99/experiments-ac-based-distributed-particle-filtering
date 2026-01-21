@@ -36,7 +36,7 @@ def read_alchemist_csv(path):
 
 def plot_particle_estimates(df, df_real, step=100, output_dir=None):
 
-    num_particles = 250
+    num_particles = 500
     indices_to_plot = range(0, len(df), step)
 
     for row_idx in indices_to_plot:
@@ -92,4 +92,4 @@ if __name__ == '__main__':
         df_real = read_alchemist_csv('data/experiment.csv')
 
 
-        plot_particle_estimates(df_particles, df_real, 100, path)
+        plot_particle_estimates(df_particles, df_real, 1, path)

@@ -11,6 +11,8 @@ import it.unibo.alchemist.model.positions.Euclidean2DPosition
 import it.unibo.filtering.Particle
 import it.unibo.filtering.ParticleFilter
 import it.unibo.filtering.Point
+import kotlin.math.hypot
+import kotlin.math.pow
 import org.apache.commons.math3.random.RandomGenerator
 
 /**
@@ -37,25 +39,39 @@ class CentralizedParticleFilter<T>(
     val maxInitialSpeed: Double = 2.0,
     val blindSpotDistance: Double = Double.MAX_VALUE,
 ) : AbstractAction<T>(node) {
+
     private val estimations: MutableList<Point> = mutableListOf()
     private val allHistory = mutableListOf<List<Particle>>()
     private val filter = ParticleFilter(numberOfParticles, maxInitialSpeed, sideLength, random)
 
-    private fun measurePosition(stdDev: Double = 0.5): Point {
+    private fun measurePosition(stdDev: Double = 0.5): Double {
         val movingNode = environment.nodes.first { it.contains(SimpleMolecule("Movable")) }
-        val truePosition = environment.getPosition(movingNode)
-        val newX = truePosition.x + (random.nextGaussian() * stdDev)
-        val newY = truePosition.y + (random.nextGaussian() * stdDev)
-        return Point(newX, newY)
+        val targetPosition = environment.getPosition(movingNode)
+        val sensorPosition = environment.getPosition(node)
+        val z = 10 / hypot(targetPosition.x - sensorPosition.x, targetPosition.y - sensorPosition.y).pow(2)
+        return z + (random.nextGaussian() * stdDev)
     }
 
     override fun execute() {
         allHistory.add(filter.getAll())
+        val t = environment.simulation.time.toDouble()
+
+        val p = filter.getAll().map { it.weight }
+
+        println("------------------------------------------------------------------------------------------------------")
+        println("Max -> ${p.max()}")
+        println("Min -> ${p.min()}")
+        println("Avg -> ${p.average()}")
+
+//        if (t > 1.0 && t < 3.0) {
+//            println(filter.getAll())
+//        }
         node.setConcentration(SimpleMolecule("Particles"), allHistory as T)
-        val position = measurePosition()
+        val measure = measurePosition()
         val sampledParticles = filter.resample()
         val newParticles = filter.predictParticles(sampledParticles)
-        filter.updateWeights(newParticles, position)
+        val sensorPosition = environment.getPosition(node)
+        filter.updateWeights(newParticles, measure,Point(sensorPosition.x, sensorPosition.y))
         val estimation = filter.estimatePosition()
         estimations.add(estimation)
         node.setConcentration(SimpleMolecule("Estimations"), estimations as T)
