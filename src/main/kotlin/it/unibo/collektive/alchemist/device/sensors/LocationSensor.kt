@@ -21,7 +21,6 @@ interface LocationSensor {
      */
     fun targetsPosition(): List<Point>
 
-
     /**
      * Returns position of the device in the environment.
      */
