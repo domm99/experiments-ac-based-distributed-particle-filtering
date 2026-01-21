@@ -25,8 +25,7 @@ def extractVariableNames(filename):
         return []
 
 def generate_charts(name = ''):
-    csv_file = 'data/track-movement-neighboring-aggregation/track-movement-neighboring-aggregation_numberOfParticles-500_maxInitialSpeed-2.0_neighboringDistance-10000.0_blindSpotDistance-5.0_numberOfSensorsForSide-3_stepLength-50_seed-42.0.csv'
-    # csv_file = 'data/experiment.csv'
+    csv_file = 'data/track-movement-neighboring-aggregation/track-movement-neighboring-aggregation_seed-42.0.csv'
 
     lines = np.matrix(openCsv(csv_file))
     vars =  extractVariableNames(csv_file)
@@ -34,7 +33,7 @@ def generate_charts(name = ''):
     df = pd.DataFrame(data=lines, columns=vars)
     df = df.dropna()
 
-    side_length = 100
+    side_length = 50
 
     df_estimation = pd.read_csv(f'data/estimations{name}.csv')
 
@@ -78,6 +77,6 @@ if __name__ == '__main__':
     if centralized:
         generate_charts(name='_node-0')
     else:
-        num_nodes = 8
+        num_nodes = 9
         for i in range(num_nodes):
             generate_charts(name=f'_node-{i}')
