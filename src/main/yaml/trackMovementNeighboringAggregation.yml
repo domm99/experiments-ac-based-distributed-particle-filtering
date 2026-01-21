@@ -12,7 +12,7 @@ variables:
     parameters: [ 2.0, [ 0.5, 1.0, 2.0, 5.0 ] ]
   neighboringDistance: &neighboringDistance
     type: ArbitraryVariable
-    parameters: [ 55.0, [ 55.0, 75.0, 100.0, 150.0, 200.0 ] ]
+    parameters: [ 10000.0, [ 55.0, 75.0, 100.0, 150.0, 200.0 ] ]
   blindSpotDistance: &blindSpotDistance
     type: ArbitraryVariable
     parameters: [ 5.0, [2.0, 5.0, 10.0, 25.0, 50.0, 100.0] ]
@@ -107,4 +107,4 @@ export:
 
 terminate:
   type: AfterTime
-  parameters: 6000.0
+  parameters: 2000.0
