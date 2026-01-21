@@ -51,10 +51,10 @@ class ParticleFilter(
     fun predictParticles(sampledParticles: List<Particle>, stdDev: Double = 1.0, dt: Double = 1.0): List<Particle> {
         val newParticles = ArrayList<Particle>(sampledParticles.size)
         for (p in sampledParticles) {
-            val noiseX = random.nextGaussian() * stdDev
-            val noiseY = random.nextGaussian() * stdDev
-            val noiseVx = random.nextGaussian() * stdDev
-            val noiseVy = random.nextGaussian() * stdDev
+            val noiseX = random.nextGaussian() * 0.5
+            val noiseY = random.nextGaussian() * 0.5
+            val noiseVx = random.nextGaussian() * 0.2
+            val noiseVy = random.nextGaussian() * 0.2
             val newX = p.x + (p.vx * dt) + noiseX
             val newY = p.y + (p.vy * dt) + noiseY
             val newVx = p.vx + noiseVx
