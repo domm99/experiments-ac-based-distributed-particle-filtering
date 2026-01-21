@@ -36,7 +36,7 @@ def read_alchemist_csv(path):
 
 def plot_particle_estimates(df, df_real, step=100, output_dir=None):
 
-    num_particles = 500
+    num_particles = 250
     indices_to_plot = range(0, len(df), step)
 
     for row_idx in indices_to_plot:
@@ -82,14 +82,14 @@ if __name__ == '__main__':
     charts_path = 'charts/allparticles/'
     Path(charts_path).mkdir(parents=True, exist_ok=True)
 
-    nodes = 1
+    nodes = 8
 
     for i in range(nodes):
         path = f'{charts_path}/node-{i}/'
         Path(path).mkdir(parents=True, exist_ok=True)
 
         df_particles = pd.read_csv(f'data/particles_node-{i}.csv')
-        df_real = read_alchemist_csv('data/experiment.csv')
+        df_real = read_alchemist_csv('data/track-movement-neighboring-aggregation/track-movement-neighboring-aggregation_numberOfParticles-250_maxInitialSpeed-2.0_neighboringDistance-200.0_blindSpotDistance-5.0_numberOfSensorsForSide-3_stepLength-50_seed-42.0.csv')
 
 
         plot_particle_estimates(df_particles, df_real, 1, path)

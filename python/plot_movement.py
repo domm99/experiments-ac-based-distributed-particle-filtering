@@ -25,7 +25,7 @@ def extractVariableNames(filename):
         return []
 
 def generate_charts(name = ''):
-    csv_file = 'data/track-movement-distributed/track-movement-distributed_numberOfParticles-250_maxInitialSpeed-2.0.csv'
+    csv_file = 'data/track-movement-neighboring-aggregation/track-movement-neighboring-aggregation_numberOfParticles-250_maxInitialSpeed-2.0_neighboringDistance-200.0_blindSpotDistance-5.0_numberOfSensorsForSide-3_stepLength-50_seed-42.0.csv'
     # csv_file = 'data/experiment.csv'
 
     lines = np.matrix(openCsv(csv_file))
@@ -72,12 +72,12 @@ def generate_charts(name = ''):
 
 if __name__ == '__main__':
 
-    centralized = True
+    centralized = False
     Path('charts').mkdir(parents=True, exist_ok=True)
 
     if centralized:
         generate_charts(name='_node-0')
     else:
-        num_nodes = 4
+        num_nodes = 8
         for i in range(num_nodes):
             generate_charts(name=f'_node-{i}')
