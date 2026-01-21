@@ -1,7 +1,6 @@
 package it.unibo.collektive
 
 import it.unibo.alchemist.collektive.device.CollektiveDevice
-import it.unibo.collektive.aggregate.Field
 import it.unibo.collektive.aggregate.api.Aggregate
 import it.unibo.collektive.aggregate.api.neighboring
 import it.unibo.collektive.alchemist.device.sensors.EnvironmentVariables
@@ -9,15 +8,13 @@ import it.unibo.collektive.alchemist.device.sensors.LocationSensor
 import it.unibo.filtering.Particle
 import it.unibo.filtering.ParticleFilter
 import it.unibo.filtering.Point
-import it.unibo.filtering.div
-import it.unibo.filtering.plus
 import kotlin.math.hypot
 import kotlin.math.log10
 import org.apache.commons.math3.random.RandomGenerator
 
 const val p0 = 100
 const val pathLoss = 2
-const val measureStdDev = 1.0
+const val measureStdDev = 0.5
 
 /**
  * The entrypoint of the simulation performing local information filtering.
@@ -63,7 +60,6 @@ fun Aggregate<*>.localFiltering(
             .all.list
             .mapNotNull { it.value }
 
-    println("${neighborsInfo.size} neighbors info")
 
     filter.updateWeights(newParticles, neighborsInfo)
     val estimation = filter.estimatePosition()
