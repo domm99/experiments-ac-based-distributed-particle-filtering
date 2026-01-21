@@ -26,7 +26,7 @@ class ParticleFilter(
     val maxInitialSpeed: Double = 2.0,
     sideLength: Double = 100.0,
     val random: RandomGenerator,
-    val measurementStdDev: Double = 1.0,
+    val measurementStdDev: Double = 0.5,
 ) {
 
     private var particles: List<Particle> = initParticles(sideLength)
@@ -70,7 +70,9 @@ class ParticleFilter(
      * @param measurement The observed measurement as a Point.
      */
     fun updateWeights(newParticles: List<Particle>, measurements: List<Pair<Point, Double>>){ //sensorPosition: Point) {
-        var totalWeight = 0.0
+
+        var maxLogW = Double.NEGATIVE_INFINITY
+
 
         newParticles.forEach { particle ->
 
@@ -84,9 +86,17 @@ class ParticleFilter(
                 val likelihood = -(0.5 * (dist * dist) / (measurementStdDev * measurementStdDev)) //- ln(sqrt(2* PI) * measurementStdDev)
                 newW += likelihood
             }
-            totalWeight += newW
+            //totalWeight += newW
             particle.weight = newW
+            if (newW > maxLogW) maxLogW = newW
         }
+
+        var totalWeight = 0.0
+        newParticles.forEach { particle ->
+            particle.weight = exp(particle.weight - maxLogW)
+            totalWeight += particle.weight
+        }
+
         // Weights normalization
         if (totalWeight > 0.0) {
             for (p in newParticles) {
