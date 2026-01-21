@@ -48,8 +48,15 @@ class LocationSensorProperty<T : Any, P : Position<P>>(
         }.filter { position ->
             position.distanceTo(environment.getPosition(node)) <= blindSpotDistance
         }.map { position ->
-            val newX = position.coordinates[0] + (random.nextGaussian() * stdDev)
-            val newY = position.coordinates[1] + (random.nextGaussian() * stdDev)
+            val newX = position.coordinates[0] // + (random.nextGaussian() * stdDev)
+            val newY = position.coordinates[1] // + (random.nextGaussian() * stdDev)
             Point(newX, newY)
         }
+
+    override fun selfPosition(): Point {
+        val selfPos = environment.getPosition(node)
+        return Point(selfPos.coordinates[0], selfPos.coordinates[1])
+    }
+
 }
+
