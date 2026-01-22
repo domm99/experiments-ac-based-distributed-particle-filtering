@@ -23,13 +23,11 @@ class LocationSensorProperty<T : Any, P : Position<P>>(
     private val environment: Environment<T, P>,
     override val node: Node<T>,
     private val random: RandomGenerator,
-    private val stdDev: Double = 0.5,
-    private val blindSpotDistance: Double = Double.MAX_VALUE, // no blind spot by default
 ) : LocationSensor,
     NodeProperty<T> {
 
     override fun cloneOnNewNode(node: Node<T>): NodeProperty<T> =
-        LocationSensorProperty(environment, node, random, stdDev)
+        LocationSensorProperty(environment, node, random)
 
     override fun coordinates(): Point {
         val position = environment.getPosition(node).coordinates
@@ -45,8 +43,8 @@ class LocationSensorProperty<T : Any, P : Position<P>>(
             node.contains(SimpleMolecule("Movable"))
         }.map { target ->
             val position = environment.getPosition(target)
-            val newX = position.coordinates[0] // + (random.nextGaussian() * stdDev)
-            val newY = position.coordinates[1] // + (random.nextGaussian() * stdDev)
+            val newX = position.coordinates[0]
+            val newY = position.coordinates[1]
             Point(newX, newY)
             }
 
