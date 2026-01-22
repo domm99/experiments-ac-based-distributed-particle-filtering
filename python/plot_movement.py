@@ -24,33 +24,32 @@ def extractVariableNames(filename):
             return regex.findall(lastHeaderLine)
         return []
 
-def generate_charts(name = ''):
-    csv_file = 'data/track-movement-neighboring-aggregation/track-movement-neighboring-aggregation_seed-42.0.csv'
-
-    lines = np.matrix(openCsv(csv_file))
-    vars =  extractVariableNames(csv_file)
+def read_alchemist_csv(path):
+    lines = np.matrix(openCsv(path))
+    vars =  extractVariableNames(path)
     vars = [v.split('[')[0] for v in vars]
     df = pd.DataFrame(data=lines, columns=vars)
     df = df.dropna()
+    return df
 
-    side_length = 50
+def generate_charts(df_true, df_estimation, name):
 
-    df_estimation = pd.read_csv(f'data/estimations{name}.csv')
+    side_length = 90
 
     plt.figure(figsize=(10, 10))
 
-    plt.plot(df['PositionX'], df['PositionY'],
+    plt.plot(df_true['PositionX'], df_true['PositionY'],
              label='Trajectory', color='blue', linestyle='--', linewidth=2, alpha=0.7)
 
     plt.plot(df_estimation['estimatedX'], df_estimation['estimatedY'],
                  label='Estimated Trajectory', color='red', linestyle='--', linewidth=2, alpha=0.7)
 
     # Initial point
-    plt.scatter(df['PositionX'].iloc[0], df['PositionY'].iloc[0],
+    plt.scatter(df_true['PositionX'].iloc[0], df_true['PositionY'].iloc[0],
                 color='green', s=100, label='Start', zorder=5, edgecolors='black')
 
     # Final point
-    plt.scatter(df['PositionX'].iloc[-1], df['PositionY'].iloc[-1],
+    plt.scatter(df_true['PositionX'].iloc[-1], df_true['PositionY'].iloc[-1],
                 color='red', s=100, label='End', zorder=5, edgecolors='black')
 
     plt.xlim(0, side_length)
@@ -71,12 +70,19 @@ def generate_charts(name = ''):
 
 if __name__ == '__main__':
 
-    centralized = False
     Path('charts').mkdir(parents=True, exist_ok=True)
+    data_path = 'data'
+    num_sensors = 9
 
-    if centralized:
-        generate_charts(name='_node-0')
-    else:
-        num_nodes = 9
-        for i in range(num_nodes):
-            generate_charts(name=f'_node-{i}')
+    df_true = read_alchemist_csv(f'{data_path}/track-movement-neighboring-aggregation/track-movement-neighboring-aggregation_seed-42.0.csv')
+
+    dfs = []
+
+    for i in range(num_sensors):
+        df_estimation = pd.read_csv(f'{data_path}/estimations_node-{i}.csv')
+        generate_charts(df_true, df_estimation, f'node-{i}')
+        dfs.append(df_estimation)
+
+    df_estimation_aggregated = pd.concat(dfs).groupby(level=0).mean()
+    generate_charts(df_true, df_estimation_aggregated, f'aggregated')
+
