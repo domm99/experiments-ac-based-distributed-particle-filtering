@@ -12,7 +12,7 @@ import kotlin.math.hypot
 import kotlin.math.log10
 import org.apache.commons.math3.random.RandomGenerator
 
-const val p0 = 100
+const val p0 = -40
 const val pathLoss = 2
 const val measureStdDev = 0.5
 
