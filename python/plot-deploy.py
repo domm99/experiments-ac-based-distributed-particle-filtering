@@ -52,15 +52,15 @@ def plot_deploy(df, time, RMSE_MIN, RMSE_MAX):
         #legend=False
     )
 
-    for i in range(df.shape[0]):
-        plt.text(
-            x=df.X[i] + 0.3,
-            y=df.Y[i] + 0.3,
-            s=int(df.id[i]),
-            fontsize=9,
-            #color='darkred',
-            fontweight='semibold',
-        )
+    # for i in range(df.shape[0]):
+    #     plt.text(
+    #         x=df.X[i] + 0.3,
+    #         y=df.Y[i] + 0.3,
+    #         s=int(df.id[i]),
+    #         fontsize=9,
+    #         #color='darkred',
+    #         fontweight='semibold',
+    #     )
 
 
     norm = Normalize(vmin=RMSE_MIN, vmax=RMSE_MAX)
@@ -75,7 +75,7 @@ def plot_deploy(df, time, RMSE_MIN, RMSE_MAX):
     #plot.legend(handles[-(len(labels)//2):], labels[-(len(labels)//2):],
     #                  bbox_to_anchor=(1.2, 1), loc='upper left', title='Error')
 
-    plt.title(f'Sensors Deployment - Time {time}', fontsize=15)
+    plt.title(f'Error per sensor - Time {time}', fontsize=15)
     plt.xlabel('X(m)')
     plt.ylabel('Y(m)')
 
@@ -103,7 +103,7 @@ if __name__ == '__main__':
         dfs_estimations[i] = data
 
     max_time = 2000
-    plot_each = 100
+    plot_each = 50
 
     times_to_plot = range(0, max_time, plot_each)
 
