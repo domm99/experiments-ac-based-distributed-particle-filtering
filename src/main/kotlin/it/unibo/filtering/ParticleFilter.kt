@@ -5,6 +5,10 @@ import kotlin.math.exp
 import kotlin.math.hypot
 import org.apache.commons.math3.random.RandomGenerator
 
+data class ParticleMemory(val filter: ParticleFilter, val particlesHistory: MutableList<ParticleHistory> = mutableListOf())
+
+data class ParticleHistory(val history: List<Particle>)
+
 /**
  * A simple Particle Filter implementation for 2D position tracking.
  * @param numberOfParticles The number of particles to use in the filter.
@@ -144,13 +148,8 @@ class ParticleFilter(
      * Estimates the current position based on the weighted average of the particles.
      * @return The estimated position as a Point.
      */
-    fun estimatePosition(): Point {
-        var x = 0.0
-        var y = 0.0
-        for (p in particles) {
-            x += p.x * p.weight
-            y += p.y * p.weight
+    fun estimatePosition(): Point =
+        particles.fold(Point(0.0,0.0)) { acc, next ->
+            acc.copy(y = acc.y + next.y * next.weight, x = acc.x + next.x * next.weight)
         }
-        return Point(x, y)
-    }
 }

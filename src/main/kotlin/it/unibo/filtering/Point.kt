@@ -1,5 +1,7 @@
 package it.unibo.filtering
 
+import kotlin.math.hypot
+
 /**
  * A simple data class representing a point in 2D space.
  *
@@ -29,12 +31,20 @@ data class Point(val x: Double, val y: Double) : Comparable<Point> {
 data class Particle(var x: Double, var y: Double, var vx: Double, var vy: Double, var weight: Double = 1.0)
 
 /**
- * Operator overloads for Point class to facilitate vector arithmetic.
+ * Operator overloads for Point class to facilitate plus vector arithmetic.
  * @receiver Point the first point
  * @param other Point the second point
  * @return Point the resulting point after addition
  */
 operator fun Point.plus(other: Point): Point = Point(this.x + other.x, this.y + other.y)
+
+/**
+ * Operator overloads for Point class to facilitate minus vector arithmetic.
+ *  * @receiver Point the first point
+ *  * @param other Point the second point
+ *  * @return Point the resulting point after addition
+ */
+operator fun Point.minus(other: Point): Point = Point(this.x - other.x, this.y - other.y)
 
 /**
  * Operator overloads for Point class to facilitate vector arithmetic.
@@ -43,3 +53,5 @@ operator fun Point.plus(other: Point): Point = Point(this.x + other.x, this.y + 
  * @return Point the resulting point after subtraction
  */
 operator fun Point.div(scalar: Double): Point = Point(this.x / scalar, this.y / scalar)
+
+fun Point.distanceTo(other: Point): Double = hypot(this.x - other.x, this.y - other.y)
