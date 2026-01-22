@@ -1,0 +1,110 @@
+incarnation: collektive
+
+_constants:
+  measurementStdDev: &measurementStdDev 2.0
+
+variables:
+  numberOfParticles: &numberOfParticles
+    type: ArbitraryVariable
+    parameters: [ 250, [ 50, 100, 250, 500 ] ]
+  maxInitialSpeed: &maxInitialSpeed
+    type: ArbitraryVariable
+    parameters: [ 2.0, [ 0.5, 1.0, 2.0, 5.0 ] ]
+  neighboringDistance: &neighboringDistance
+    type: ArbitraryVariable
+    parameters: [ 55.0, [ 55.0, 75.0, 100.0, 150.0, 200.0 ] ]
+  blindSpotDistance: &blindSpotDistance
+    type: ArbitraryVariable
+    parameters: [ 55.0, [2.0, 5.0, 10.0, 25.0, 50.0, 100.0] ]
+  numberOfSensorsForSide: &numberOfSensorsForSide
+    type: ArbitraryVariable
+    parameters: [3, [1, 2, 3, 4, 5, 10]]
+  stepLength: &stepLength
+    type: ArbitraryVariable
+    parameters: [50]
+  size: &size
+    formula: stepLength * numberOfSensorsForSide
+  seed: &seed
+    min: 0
+    max: 42
+    step: 1
+    default: 42
+
+seeds:
+  scenario: *seed
+  simulation: *seed
+
+network-model:
+  type: ConnectWithinDistance
+  parameters: [*neighboringDistance]
+
+_pool: &program
+  - time-distribution: 1
+    type: Event
+    actions:
+      - type: RunCollektiveProgram
+        parameters: [ it.unibo.collektive.AggregateInformationAgentLeaderBasedKt.informationFilterEntrypointLeaderBased]
+
+_movement: &movement
+  - time-distribution: 1
+    type: Event
+    actions:
+      - type: MoveNode
+        parameters:
+          - 0.05
+          - 0.03
+          - *size
+          - 0.001
+
+deployments:
+  - type: Grid
+    parameters: [ 0, 0, *size, *size, *stepLength, *stepLength, 1, 1 ]
+    contents:
+      - molecule: Filter
+        concentration: true
+      - molecule: NumberOfParticles
+        concentration: *numberOfParticles
+      - molecule: MaxInitialSpeed
+        concentration: *maxInitialSpeed
+      - molecule: SideLength
+        concentration: *size
+      - molecule: BlindSpotDistance
+        concentration: *blindSpotDistance
+    programs: *program
+    properties:
+      - type: it.unibo.collektive.alchemist.device.sensors.impl.LocationSensorProperty
+        parameters: [*measurementStdDev, *blindSpotDistance ]
+
+  - type: Point
+    parameters: [ 0, 0 ]
+    contents:
+      - molecule: Movable
+        concentration: true
+#    programs:
+#      - *movement
+
+launcher:
+  parameters:
+    batch: [seed, numberOfParticles, maxInitialSpeed, neighboringDistance, blindSpotDistance, numberOfSensorsForSide]
+    showProgress: true
+    autoStart: true
+
+export:
+  - type: CSVExporter
+    parameters:
+      fileNameRoot: "track-movement-neighboring-aggregation"
+      interval: 1.0
+      exportPath: "data/track-movement-neighboring-aggregation"
+    data:
+      - time
+      - molecule: PositionX
+        aggregators: [mean]
+        value-filter: onlyFinite
+        precision: 3
+      - molecule: PositionY
+        aggregators: [mean]
+        value-filter: onlyfinite
+
+#terminate:
+#  type: AfterTime
+#  parameters: 6000.0
