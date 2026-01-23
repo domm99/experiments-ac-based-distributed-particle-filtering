@@ -32,9 +32,9 @@ def read_alchemist_csv(path):
     df = df.dropna()
     return df
 
-def generate_charts(df_true, df_estimation, name):
+def generate_charts(df_true, df_estimation, name, charts_path):
 
-    side_length = 90
+    side_length = 100
 
     plt.figure(figsize=(10, 10))
 
@@ -66,23 +66,26 @@ def generate_charts(df_true, df_estimation, name):
     plt.gca().set_aspect('equal', adjustable='box')
 
     plt.tight_layout()
-    plt.savefig(f'charts/trajectory{name}.pdf')
+    plt.savefig(f'{charts_path}/trajectory{name}.pdf')
 
 if __name__ == '__main__':
 
-    Path('charts').mkdir(parents=True, exist_ok=True)
-    data_path = 'data'
-    num_sensors = 9
+    experiments = [('singlesensor', 1), ('grid2x1', 2), ('grid3x3', 9),('grid5x5', 25)]
 
-    df_true = read_alchemist_csv(f'{data_path}/track-movement-neighboring-aggregation/track-movement-neighboring-aggregation_seed-42.0.csv')
+    for experiment, num_sensors in experiments:
+        charts_path = f'charts-{experiment}'
+        Path(charts_path).mkdir(parents=True, exist_ok=True)
+        data_path = f'data-{experiment}'
 
-    dfs = []
+        df_true = read_alchemist_csv(f'{data_path}/track-movement-neighboring-aggregation/track-movement-neighboring-aggregation_seed-42.0.csv')
 
-    for i in range(num_sensors):
-        df_estimation = pd.read_csv(f'{data_path}/estimations_node-{i}.csv')
-        generate_charts(df_true, df_estimation, f'node-{i}')
-        dfs.append(df_estimation)
+        dfs = []
 
-    df_estimation_aggregated = pd.concat(dfs).groupby(level=0).mean()
-    generate_charts(df_true, df_estimation_aggregated, f'aggregated')
+        for i in range(num_sensors):
+            df_estimation = pd.read_csv(f'{data_path}/estimations_node-{i}.csv')
+            generate_charts(df_true, df_estimation, f'node-{i}', charts_path)
+            dfs.append(df_estimation)
+
+        df_estimation_aggregated = pd.concat(dfs).groupby(level=0).mean()
+        generate_charts(df_true, df_estimation_aggregated, f'aggregated', charts_path)
 
