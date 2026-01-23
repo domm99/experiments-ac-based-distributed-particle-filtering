@@ -109,7 +109,7 @@ class ParticleFilter(
         val cumulativeWeights = DoubleArray(numberOfParticles)
         var currentSum = 0.0
 
-        for (i in 0 until numberOfParticles) {
+        for (i in 0 until particles.size) {
             currentSum += particles[i].weight
             cumulativeWeights[i] = currentSum / totalWeight
         }
