@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 import matplotlib.pyplot as plt
+import matplotlib
 
 def openCsv(path):
     regex = re.compile('\d')
@@ -39,7 +40,7 @@ def generate_charts(df_true, df_estimation, name, charts_path):
     plt.figure(figsize=(10, 10))
 
     plt.plot(df_true['PositionX'], df_true['PositionY'],
-             label='Trajectory', color='blue', linestyle='--', linewidth=2, alpha=0.7)
+             label='Real Trajectory', color='blue', linestyle='--', linewidth=2, alpha=0.7)
 
     plt.plot(df_estimation['estimatedX'], df_estimation['estimatedY'],
                  label='Estimated Trajectory', color='red', linestyle='--', linewidth=2, alpha=0.7)
@@ -55,7 +56,7 @@ def generate_charts(df_true, df_estimation, name, charts_path):
     plt.xlim(0, side_length)
     plt.ylim(0, side_length)
 
-    plt.title(f'Trajectory', fontsize=14)
+    #plt.title(f'Trajectory')
     plt.xlabel('X (m)')
     plt.ylabel('Y (m)')
 
@@ -69,6 +70,16 @@ def generate_charts(df_true, df_estimation, name, charts_path):
     plt.savefig(f'{charts_path}/trajectory{name}.pdf')
 
 if __name__ == '__main__':
+
+    # Set matplotlib parameters
+    matplotlib.rcParams.update({'axes.titlesize': 45})
+    matplotlib.rcParams.update({'axes.labelsize': 35})
+    matplotlib.rcParams.update({'xtick.labelsize': 30})
+    matplotlib.rcParams.update({'ytick.labelsize': 30})
+    matplotlib.rcParams.update({"text.usetex": True})
+    matplotlib.rcParams.update({'legend.fontsize': 28})
+    matplotlib.rcParams.update({'legend.title_fontsize': 25})
+    matplotlib.rc('text.latex', preamble=r'\usepackage{amsmath,amssymb,amsfonts}')
 
     experiments = [('singlesensor', 1), ('grid2x1', 2), ('grid3x3', 9),('grid5x5', 25)]
 
@@ -87,5 +98,5 @@ if __name__ == '__main__':
             dfs.append(df_estimation)
 
         df_estimation_aggregated = pd.concat(dfs).groupby(level=0).mean()
-        generate_charts(df_true, df_estimation_aggregated, f'aggregated', charts_path)
+        generate_charts(df_true, df_estimation_aggregated, f'-{num_sensors}sensors', charts_path)
 
