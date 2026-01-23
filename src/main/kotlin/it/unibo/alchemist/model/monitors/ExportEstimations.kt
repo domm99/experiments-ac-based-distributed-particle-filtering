@@ -18,7 +18,7 @@ class Line(vararg val values: Any)
 class ExportEstimations<T> : OutputMonitor<T, Euclidean2DPosition> {
 
     override fun finished(environment: Environment<T?, Euclidean2DPosition>, time: Time, step: Long) {
-        val filters = environment.nodes.filter { it.contains(SimpleMolecule("Filter")) }
+        val filters = environment.nodes.filter { it.contains(SimpleMolecule("isLeader")) }
 
         filters.forEach { filter ->
             val estimations = filter.getConcentration(SimpleMolecule("Estimations")) as MutableList<Point>

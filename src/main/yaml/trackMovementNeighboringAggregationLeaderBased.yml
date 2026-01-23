@@ -80,8 +80,8 @@ deployments:
     contents:
       - molecule: Movable
         concentration: true
-#    programs:
-#      - *movement
+    programs:
+      - *movement
 
 launcher:
   parameters:
@@ -92,9 +92,9 @@ launcher:
 export:
   - type: CSVExporter
     parameters:
-      fileNameRoot: "track-movement-neighboring-aggregation"
+      fileNameRoot: "track-movement-neighboring-aggregation-leader-based"
       interval: 1.0
-      exportPath: "data/track-movement-neighboring-aggregation"
+      exportPath: "data/track-movement-neighboring-aggregation-leader-based"
     data:
       - time
       - molecule: PositionX
@@ -105,6 +105,6 @@ export:
         aggregators: [mean]
         value-filter: onlyfinite
 
-#terminate:
-#  type: AfterTime
-#  parameters: 6000.0
+terminate:
+  type: AfterTime
+  parameters: 6000.0
