@@ -11,7 +11,7 @@ import java.util.Locale
 /**
  * Exports the estimations made by filter nodes to CSV files upon simulation completion.
  */
-class ExportSensorsDeployment<T>(val seed: Double) : OutputMonitor<T, Euclidean2DPosition> {
+class ExportSensorsDeployment<T>(val seed: Double, val dataPath: String) : OutputMonitor<T, Euclidean2DPosition> {
 
     override fun finished(environment: Environment<T?, Euclidean2DPosition>, time: Time, step: Long) {
         val filters = environment.nodes.filter { it.contains(SimpleMolecule("Filter")) }
@@ -25,7 +25,7 @@ class ExportSensorsDeployment<T>(val seed: Double) : OutputMonitor<T, Euclidean2
             }
 
         exportToCsv(
-            "data/sensors-positions_seed-$seed.csv",
+            "$dataPath/sensors-positions_seed-$seed.csv",
             "id,X,Y,NumberOfNeighbors",
             "%d,%.4f,%.4f,%d",
             positions.map { Line(it.first, it.second[0], it.second[1], it.third) },

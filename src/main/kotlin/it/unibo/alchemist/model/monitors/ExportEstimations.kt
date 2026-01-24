@@ -15,35 +15,42 @@ class Line(vararg val values: Any)
 /**
  * Exports the estimations made by filter nodes to CSV files upon simulation completion.
  */
-class ExportEstimations<T>(val seed: Double) : OutputMonitor<T, Euclidean2DPosition> {
+class ExportEstimations<T>(val seed: Double, val dataPath: String) : OutputMonitor<T, Euclidean2DPosition> {
 
     override fun finished(environment: Environment<T?, Euclidean2DPosition>, time: Time, step: Long) {
-        val filters = environment.nodes.filter { it.contains(SimpleMolecule("Filter")) }
+        try{
+            val filters = environment.nodes.filter { it.contains(SimpleMolecule("Filter")) }
 
-        filters.forEach { filter ->
-            val estimations = filter.getConcentration(SimpleMolecule("Estimations")) as MutableList<Point>
-            val id = filter.id
-            exportToCsv(
-                "data/estimations_node-${id}_seed-$seed.csv",
-                "estimatedX,estimatedY",
-                "%.4f,%.4f",
-                estimations.map { Line(it.x, it.y) }
-            )
+            filters.forEach { filter ->
+                val estimations = filter.getConcentration(SimpleMolecule("Estimations")) as MutableList<Point>
+                val id = filter.id
+                exportToCsv(
+                    "$dataPath/estimations_node-${id}_seed-$seed.csv",
+                    "estimatedX,estimatedY",
+                    "%.4f,%.4f",
+                    estimations.map { Line(it.x, it.y) }
+                )
 
-            val numberOfParticles = filter.getConcentration(SimpleMolecule("NumberOfParticles")) as Int
-            val particles = filter.getConcentration(SimpleMolecule("Particles")) as MutableList<MutableList<Particle>>
-            val header = (0 until numberOfParticles).joinToString(",") { "p_$it-X,p_$it-Y,p_$it-vX,p_$it-vY,p_$it-W" }
-            val format = (0 until numberOfParticles).joinToString(",") { "%.4f,%.4f,%.4f,%.4f,%.4f" }
-            val hist = particles.map { particleList ->
-                val coordinates = particleList.flatMap { listOf(it.x, it.y, it.vx, it.vy, it.weight) }.toTypedArray()
-                Line(*coordinates)
+                val numberOfParticles = filter.getConcentration(SimpleMolecule("NumberOfParticles")) as Int
+                val particles =
+                    filter.getConcentration(SimpleMolecule("Particles")) as MutableList<MutableList<Particle>>
+                val header =
+                    (0 until numberOfParticles).joinToString(",") { "p_$it-X,p_$it-Y,p_$it-vX,p_$it-vY,p_$it-W" }
+                val format = (0 until numberOfParticles).joinToString(",") { "%.4f,%.4f,%.4f,%.4f,%.4f" }
+                val hist = particles.map { particleList ->
+                    val coordinates =
+                        particleList.flatMap { listOf(it.x, it.y, it.vx, it.vy, it.weight) }.toTypedArray()
+                    Line(*coordinates)
+                }
+                exportToCsv(
+                    "$dataPath/particles_node-${id}_seed-$seed.csv",
+                    header,
+                    format,
+                    hist
+                )
             }
-            exportToCsv(
-                "data/particles_node-${id}_seed-$seed.csv",
-                header,
-                format,
-                hist
-            )
+        }catch (e: Exception) {
+            println(e.stackTrace)
         }
     }
 
