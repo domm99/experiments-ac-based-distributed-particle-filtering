@@ -15,7 +15,7 @@ class Line(vararg val values: Any)
 /**
  * Exports the estimations made by filter nodes to CSV files upon simulation completion.
  */
-class ExportEstimations<T> : OutputMonitor<T, Euclidean2DPosition> {
+class ExportEstimations<T>(val seed: Double) : OutputMonitor<T, Euclidean2DPosition> {
 
     override fun finished(environment: Environment<T?, Euclidean2DPosition>, time: Time, step: Long) {
         val filters = environment.nodes.filter { it.contains(SimpleMolecule("Filter")) }
@@ -24,7 +24,7 @@ class ExportEstimations<T> : OutputMonitor<T, Euclidean2DPosition> {
             val estimations = filter.getConcentration(SimpleMolecule("Estimations")) as MutableList<Point>
             val id = filter.id
             exportToCsv(
-                "data/estimations_node-$id.csv",
+                "data/estimations_node-${id}_seed-$seed.csv",
                 "estimatedX,estimatedY",
                 "%.4f,%.4f",
                 estimations.map { Line(it.x, it.y) }
@@ -39,7 +39,7 @@ class ExportEstimations<T> : OutputMonitor<T, Euclidean2DPosition> {
                 Line(*coordinates)
             }
             exportToCsv(
-                "data/particles_node-$id.csv",
+                "data/particles_node-${id}_seed-$seed.csv",
                 header,
                 format,
                 hist
