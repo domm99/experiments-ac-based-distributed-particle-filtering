@@ -81,19 +81,21 @@ if __name__ == '__main__':
     matplotlib.rcParams.update({'legend.title_fontsize': 25})
     matplotlib.rc('text.latex', preamble=r'\usepackage{amsmath,amssymb,amsfonts}')
 
-    experiments = [('singlesensor', 1), ('grid2x1', 2), ('grid3x3', 9),('grid5x5', 25)]
+    experiments = [('grid1x1', 1), ('grid2x1', 2), ('grid3x3', 9),('grid5x5', 25)]
+
+    seed_to_plot = 96
 
     for experiment, num_sensors in experiments:
-        charts_path = f'charts-{experiment}'
+        charts_path = f'charts/seed-{seed_to_plot}/{experiment}'
         Path(charts_path).mkdir(parents=True, exist_ok=True)
         data_path = f'data-{experiment}'
 
-        df_true = read_alchemist_csv(f'{data_path}/track-movement-neighboring-aggregation/track-movement-neighboring-aggregation_seed-42.0.csv')
+        df_true = read_alchemist_csv(f'{data_path}/track-movement-neighboring-aggregation_seed-{seed_to_plot}.0.csv')
 
         dfs = []
 
         for i in range(num_sensors):
-            df_estimation = pd.read_csv(f'{data_path}/estimations_node-{i}.csv')
+            df_estimation = pd.read_csv(f'{data_path}/estimations_node-{i}_seed-{seed_to_plot}.0.csv')
             generate_charts(df_true, df_estimation, f'node-{i}', charts_path)
             dfs.append(df_estimation)
 
