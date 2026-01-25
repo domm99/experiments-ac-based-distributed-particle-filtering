@@ -37,11 +37,9 @@ def read_alchemist_csv(path):
 def plot_particle_estimates(df, df_real, step=100, output_dir=None):
 
     num_particles = 250
-    indices_to_plot = range(0, len(df), step)
-
+    indices_to_plot = range(0, df_real.shape[0], step)
     for row_idx in indices_to_plot:
         row = df.iloc[row_idx]
-
         row_real = df_real.iloc[row_idx]
 
         plt.figure(figsize=(10, 8))
@@ -59,16 +57,18 @@ def plot_particle_estimates(df, df_real, step=100, output_dir=None):
             ys.append(y)
             ws.append(w)
 
-        sizes = [max(0.1, weight * 1000) for weight in ws]
+        sizes = [max(0.1, weight * 100000) for weight in ws]
 
 
 
         plt.scatter(xs, ys, s=sizes, alpha=0.6, edgecolors='none', color='blue', zorder=1)
-        plt.scatter(row_real['PositionX'], row_real['PositionY'], s=30, edgecolors='none', color='red', zorder=2)
+        plt.scatter(row_real['PositionX'], row_real['PositionY'], s=800, edgecolors='none', color='red', zorder=2)
 
-        plt.title(f"Particle Filter Distribution - Timestep {row_idx}")
-        plt.xlabel("X (m)")
-        plt.ylabel("Y (m)")
+        plt.title(f"t={row_idx}", fontsize=40)
+        plt.xlabel("X (m)", fontsize=35)
+        plt.ylabel("Y (m)", fontsize=35)
+        plt.xticks(fontsize=25)
+        plt.yticks(fontsize=25)
         plt.grid(True, linestyle='--', alpha=0.5)
 
         plt.ylim(0, 100)
@@ -82,14 +82,19 @@ if __name__ == '__main__':
     charts_path = 'charts/allparticles/'
     Path(charts_path).mkdir(parents=True, exist_ok=True)
 
-    nodes = 8
 
-    for i in range(nodes):
-        path = f'{charts_path}/node-{i}/'
-        Path(path).mkdir(parents=True, exist_ok=True)
+    experiments = [('grid1x1', 1), ('grid2x1', 2), ('grid3x3', 9), ('grid5x5', 25)]
 
-        df_particles = pd.read_csv(f'data/particles_node-{i}.csv')
-        df_real = read_alchemist_csv('data/track-movement-neighboring-aggregation/track-movement-neighboring-aggregation_numberOfParticles-250_maxInitialSpeed-2.0_neighboringDistance-200.0_blindSpotDistance-5.0_numberOfSensorsForSide-3_stepLength-50_seed-42.0.csv')
+    seed = 42
 
+    for experiment, nodes in experiments:
 
-        plot_particle_estimates(df_particles, df_real, 1, path)
+        data_path = f'data-{experiment}-graphic'
+
+        df_real = read_alchemist_csv(f'{data_path}/track-movement-neighboring-aggregation_seed-{seed}.0.csv')
+        for i in range(nodes):
+            path = f'{charts_path}/{experiment}/node-{i}/'
+            Path(path).mkdir(parents=True, exist_ok=True)
+
+            df_particles = pd.read_csv(f'{data_path}/particles_node-{i}_seed-{seed}.0.csv')
+            plot_particle_estimates(df_particles, df_real, 100, path)
