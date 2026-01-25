@@ -40,50 +40,43 @@ def generate_charts(df_true, df_estimation, name, charts_path):
     plt.figure(figsize=(10, 10))
 
     plt.plot(df_true['PositionX'], df_true['PositionY'],
-             label='Real Trajectory', color='blue', linestyle='--', linewidth=2, alpha=0.7)
+             label='Real Trajectory', color='blue', linestyle='--', linewidth=4, alpha=0.7)
 
     plt.plot(df_estimation['estimatedX'], df_estimation['estimatedY'],
-                 label='Estimated Trajectory', color='red', linestyle='--', linewidth=2, alpha=0.7)
+                 label='Estimated Trajectory', color='red', linestyle='--', linewidth=4, alpha=0.7)
 
     # Initial point
     plt.scatter(df_true['PositionX'].iloc[0], df_true['PositionY'].iloc[0],
-                color='green', s=100, label='Start', zorder=5, edgecolors='black')
+                color='green', s=200, label='Start', zorder=5, edgecolors='black')
 
     # Final point
     plt.scatter(df_true['PositionX'].iloc[-1], df_true['PositionY'].iloc[-1],
-                color='red', s=100, label='End', zorder=5, edgecolors='black')
+                color='red', s=200, label='End', zorder=5, edgecolors='black')
 
     plt.xlim(0, side_length)
     plt.ylim(0, side_length)
 
     #plt.title(f'Trajectory')
-    plt.xlabel('X (m)')
-    plt.ylabel('Y (m)')
+    plt.xlabel('X (m)', fontsize=40)
+    plt.ylabel('Y (m)', fontsize=40)
 
     plt.grid(True, linestyle='--', alpha=0.6)
 
-    plt.legend()
+    plt.legend(fontsize=30, title_fontsize=22)
 
     plt.gca().set_aspect('equal', adjustable='box')
+
+    plt.xticks(fontsize=30)
+    plt.yticks(fontsize=30)
 
     plt.tight_layout()
     plt.savefig(f'{charts_path}/trajectory{name}.pdf')
 
 if __name__ == '__main__':
 
-    # Set matplotlib parameters
-    matplotlib.rcParams.update({'axes.titlesize': 45})
-    matplotlib.rcParams.update({'axes.labelsize': 35})
-    matplotlib.rcParams.update({'xtick.labelsize': 30})
-    matplotlib.rcParams.update({'ytick.labelsize': 30})
-    matplotlib.rcParams.update({"text.usetex": True})
-    matplotlib.rcParams.update({'legend.fontsize': 28})
-    matplotlib.rcParams.update({'legend.title_fontsize': 25})
-    matplotlib.rc('text.latex', preamble=r'\usepackage{amsmath,amssymb,amsfonts}')
-
     experiments = [('grid1x1', 1), ('grid2x1', 2), ('grid3x3', 9),('grid5x5', 25)]
 
-    seed_to_plot = 96
+    seed_to_plot = 42
 
     for experiment, num_sensors in experiments:
         charts_path = f'charts/seed-{seed_to_plot}/{experiment}'
