@@ -5,8 +5,8 @@ import it.unibo.alchemist.model.Environment
 import it.unibo.alchemist.model.Time
 import it.unibo.alchemist.model.molecules.SimpleMolecule
 import it.unibo.alchemist.model.positions.Euclidean2DPosition
-import it.unibo.filtering.Point
 import it.unibo.filtering.Particle
+import it.unibo.filtering.Point
 import java.io.File
 import java.util.Locale
 
@@ -18,32 +18,40 @@ class Line(vararg val values: Any)
 class ExportEstimations<T> : OutputMonitor<T, Euclidean2DPosition> {
 
     override fun finished(environment: Environment<T?, Euclidean2DPosition>, time: Time, step: Long) {
-        val filters = environment.nodes.filter { it.contains(SimpleMolecule("isLeader")) }
+        try {
 
-        filters.forEach { filter ->
-            val estimations = filter.getConcentration(SimpleMolecule("Estimations")) as MutableList<Point>
-            val id = filter.id
-            exportToCsv(
-                "data/estimations_node-$id.csv",
-                "estimatedX,estimatedY",
-                "%.4f,%.4f",
-                estimations.map { Line(it.x, it.y) }
-            )
+            val filters = environment.nodes.filter { it.contains(SimpleMolecule("Filter")) }
 
-            val numberOfParticles = filter.getConcentration(SimpleMolecule("NumberOfParticles")) as Int
-            val particles = filter.getConcentration(SimpleMolecule("Particles")) as MutableList<MutableList<Particle>>
-            val header = (0 until numberOfParticles).joinToString(",") { "p_$it-X,p_$it-Y,p_$it-vX,p_$it-vY,p_$it-W" }
-            val format = (0 until numberOfParticles).joinToString(",") { "%.4f,%.4f,%.4f,%.4f,%.4f" }
-            val hist = particles.map { particleList ->
-                val coordinates = particleList.flatMap { listOf(it.x, it.y, it.vx, it.vy, it.weight) }.toTypedArray()
-                Line(*coordinates)
+            filters.forEach { filter ->
+                val estimations = filter.getConcentration(SimpleMolecule("Estimations")) as MutableList<Point>
+                val id = filter.id
+                exportToCsv(
+                    "data/estimations_node-$id.csv",
+                    "estimatedX,estimatedY",
+                    "%.4f,%.4f",
+                    estimations.map { Line(it.x, it.y) },
+                )
+
+//                val numberOfParticles = filter.getConcentration(SimpleMolecule("NumberOfParticles")) as Int
+//                val particles =
+//                    filter.getConcentration(SimpleMolecule("Particles")) as MutableList<MutableList<Particle>>
+//                val header =
+//                    (0 until numberOfParticles).joinToString(",") { "p_$it-X,p_$it-Y,p_$it-vX,p_$it-vY,p_$it-W" }
+//                val format = (0 until numberOfParticles).joinToString(",") { "%.4f,%.4f,%.4f,%.4f,%.4f" }
+//                val hist = particles.map { particleList ->
+//                    val coordinates =
+//                        particleList.flatMap { listOf(it.x, it.y, it.vx, it.vy, it.weight) }.toTypedArray()
+//                    Line(*coordinates)
+//                }
+//                exportToCsv(
+//                    "data/particles_node-$id.csv",
+//                    header,
+//                    format,
+//                    hist,
+//                )
             }
-            exportToCsv(
-                "data/particles_node-$id.csv",
-                header,
-                format,
-                hist
-            )
+        }catch (e: Exception) {
+            println(e.stackTrace)
         }
     }
 
@@ -56,13 +64,12 @@ class ExportEstimations<T> : OutputMonitor<T, Euclidean2DPosition> {
         File(filename).printWriter().use { out ->
             // Header
             out.println(header)
-
             // Data
             history.forEach { step ->
                 val line = String.format(
                     Locale.US,
                     format,
-                    *step.values
+                    *step.values,
                 )
                 out.println(line)
             }
