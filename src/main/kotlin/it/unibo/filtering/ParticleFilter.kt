@@ -5,7 +5,10 @@ import kotlin.math.exp
 import kotlin.math.hypot
 import org.apache.commons.math3.random.RandomGenerator
 
-data class ParticleMemory(val filter: ParticleFilter, val particlesHistory: MutableList<ParticleHistory> = mutableListOf())
+data class ParticleMemory(
+    val filter: ParticleFilter,
+    val particlesHistory: MutableList<ParticleHistory> = mutableListOf(),
+)
 
 data class ParticleHistory(val history: List<Particle>)
 
@@ -37,119 +40,75 @@ class ParticleFilter(
 
     fun getAll(): List<Particle> = particles
 
-    /**
-     * Predicts the new state of the particles based on a simple motion model with added Gaussian noise.
-     * @param sampledParticles The list of particles to predict from.
-     * @param stdDev The standard deviation of the Gaussian noise to add.
-     * @param dt The time step for the prediction.
-     * @return A new list of predicted particles.
-     */
-    fun predictParticles(sampledParticles: List<Particle>, stdDev: Double = 1.0, dt: Double = 1.0): List<Particle> {
-        val newParticles = ArrayList<Particle>(sampledParticles.size)
-        for (p in sampledParticles) {
-            val noiseX = random.nextGaussian() * stdDev
-            val noiseY = random.nextGaussian() * stdDev
-            val noiseVx = random.nextGaussian() * stdDev
-            val noiseVy = random.nextGaussian() * stdDev
-            val newX = p.x + (p.vx * dt) + noiseX
-            val newY = p.y + (p.vy * dt) + noiseY
-            val newVx = p.vx + noiseVx
-            val newVy = p.vy + noiseVy
-            newParticles.add(Particle(newX, newY, newVx, newVy, p.weight))
+    fun predict(stdDev: Double = 1.0, dt: Double = 1.0) {
+        particles = particles.map { p ->
+            val nx = random.nextGaussian() * stdDev
+            val ny = random.nextGaussian() * stdDev
+            val nvx = random.nextGaussian() * stdDev
+            val nvy = random.nextGaussian() * stdDev
+            p.copy(
+                x = p.x + p.vx * dt + nx,
+                y = p.y + p.vy * dt + ny,
+                vx = p.vx + nvx,
+                vy = p.vy + nvy
+            )
         }
-        return newParticles
     }
 
-    /**
-     * Updates the weights of the particles based on the measurement.
-     * @param newParticles The list of particles to update.
-     * @param measurement The observed measurement as a Point.
-     */
-    fun updateWeights(newParticles: List<Particle>, measurement: Point?) {
-        if (measurement == null) {
-            val uniformWeight = 1.0 / numberOfParticles
-            for (p in newParticles) {
-                p.weight = uniformWeight
-            }
-            particles = newParticles
-            return
+    fun updateWithMeasurements(measurements: List<Point>) {
+        if (measurements.isEmpty()) return
+
+        particles.forEach { p ->
+            val logLikelihood = measurements.sumOf { z ->
+                val d = hypot(p.x - z.x, p.y - z.y)
+                -0.5 * (d * d) / (measurementStdDev * measurementStdDev)
+            } / measurements.size
+
+            p.weight *= exp(logLikelihood)
         }
-        var totalWeight = 0.0
-        newParticles.forEach { particle ->
-            val dist = hypot(particle.x - measurement.x, particle.y - measurement.y)
-            // P(z|x) ~ exp(-dist^2 / (2 * sigma^2))
-            val likelihood = exp(-0.5 * (dist * dist) / (measurementStdDev * measurementStdDev))
-            particle.weight = likelihood
-            totalWeight += likelihood
-        }
-        // Weights normalization
-        if (totalWeight > 0.0) {
-            for (p in newParticles) {
-                p.weight /= totalWeight
-            }
+        normalize()
+    }
+
+    private fun normalize() {
+        val sum = particles.sumOf { it.weight }
+        if (sum > 0.0) {
+            particles = particles.map { it.copy(weight = it.weight / sum) }
         } else {
-            val uniformWeight = 1.0 / numberOfParticles
-            for (p in newParticles) {
-                p.weight = uniformWeight
-            }
+            val uniform = 1.0 / numberOfParticles
+            particles = particles.map { it.copy(weight = uniform) }
+        }
+    }
+
+    fun resample() {
+        val cumulative = DoubleArray(numberOfParticles)
+        var acc = 0.0
+        for (i in particles.indices) {
+            acc += particles[i].weight
+            cumulative[i] = acc
+        }
+        val newParticles = ArrayList<Particle>(numberOfParticles)
+        val step = 1.0 / numberOfParticles
+        var r = random.nextDouble(0.0, step)
+        var i = 0
+
+        repeat(numberOfParticles) {
+            while (r > cumulative[i]) i++
+            val p = particles[i]
+            newParticles.add(
+                Particle(p.x, p.y, p.vx, p.vy, step)
+            )
+            r += step
         }
         particles = newParticles
     }
 
-    /**
-     * Resamples particles based on their weights using systematic resampling.
-     * @return A new list of resampled particles with reset weights.
-     */
-    fun resample(): List<Particle> {
-        val newParticles = ArrayList<Particle>(numberOfParticles)
-        val totalWeight = particles.sumOf { it.weight }
-
-        if (totalWeight == 0.0) return particles
-
-        val cumulativeWeights = DoubleArray(numberOfParticles)
-        var currentSum = 0.0
-
-        for (i in 0 until particles.size) {
-            currentSum += particles[i].weight
-            cumulativeWeights[i] = currentSum / totalWeight
+    fun estimatePosition(): Point {
+        var x = 0.0
+        var y = 0.0
+        particles.forEach { p ->
+            x += p.x * p.weight
+            y += p.y * p.weight
         }
-
-        cumulativeWeights[numberOfParticles - 1] = 1.0
-
-        val resetWeight = 1.0 / numberOfParticles
-
-        repeat(numberOfParticles) {
-            val r = random.nextDouble()
-
-            var selectedIndex = 0
-            for (j in 0 until numberOfParticles) {
-                if (r <= cumulativeWeights[j]) {
-                    selectedIndex = j
-                    break
-                }
-            }
-
-            val p = particles[selectedIndex]
-            newParticles.add(
-                Particle(
-                    x = p.x,
-                    y = p.y,
-                    vx = p.vx,
-                    vy = p.vy,
-                    weight = resetWeight,
-                ),
-            )
-        }
-
-        return newParticles
+        return Point(x, y)
     }
-
-    /**
-     * Estimates the current position based on the weighted average of the particles.
-     * @return The estimated position as a Point.
-     */
-    fun estimatePosition(): Point =
-        particles.fold(Point(0.0,0.0)) { acc, next ->
-            acc.copy(y = acc.y + next.y * next.weight, x = acc.x + next.x * next.weight)
-        }
 }
