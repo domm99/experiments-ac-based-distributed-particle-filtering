@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from pathlib import Path
 import matplotlib.pyplot as plt
+import matplotlib
 
 def openCsv(path):
     regex = re.compile('\d')
@@ -24,60 +25,114 @@ def extractVariableNames(filename):
             return regex.findall(lastHeaderLine)
         return []
 
-def generate_charts(name = ''):
-    csv_file = 'data/track-movement-distributed/track-movement-distributed_numberOfParticles-250_maxInitialSpeed-2.0.csv'
-    # csv_file = 'data/experiment.csv'
-
-    lines = np.matrix(openCsv(csv_file))
-    vars =  extractVariableNames(csv_file)
+def read_alchemist_csv(path):
+    lines = np.matrix(openCsv(path))
+    vars =  extractVariableNames(path)
     vars = [v.split('[')[0] for v in vars]
     df = pd.DataFrame(data=lines, columns=vars)
     df = df.dropna()
+    return df
+
+def generate_charts(df_true, df_estimation, name, charts_path):
 
     side_length = 100
 
-    df_estimation = pd.read_csv(f'data/estimations{name}.csv')
-
     plt.figure(figsize=(10, 10))
 
-    plt.plot(df['PositionX'], df['PositionY'],
-             label='Trajectory', color='blue', linestyle='--', linewidth=2, alpha=0.7)
+    plt.plot(df_true['PositionX'], df_true['PositionY'],
+             label='Real Trajectory', color='blue', linestyle='--', linewidth=2, alpha=0.7)
 
-    plt.plot(df_estimation['estimatedX'], df_estimation['estimatedY'],
-                 label='Estimated Trajectory', color='red', linestyle='--', linewidth=2, alpha=0.7)
+    plt.scatter(df_estimation['estimatedX'], df_estimation['estimatedY'],
+             label='Estimated Trajectory', color='red', alpha=0.7, s=20)
 
     # Initial point
-    plt.scatter(df['PositionX'].iloc[0], df['PositionY'].iloc[0],
+    plt.scatter(df_true['PositionX'].iloc[0], df_true['PositionY'].iloc[0],
                 color='green', s=100, label='Start', zorder=5, edgecolors='black')
 
     # Final point
-    plt.scatter(df['PositionX'].iloc[-1], df['PositionY'].iloc[-1],
+    plt.scatter(df_true['PositionX'].iloc[-1], df_true['PositionY'].iloc[-1],
                 color='red', s=100, label='End', zorder=5, edgecolors='black')
 
-    plt.xlim(0, side_length)
-    plt.ylim(0, side_length)
+    plt.xlim(0, df_true['PositionX'].max()+10)
+    # plt.ylim(0, side_length)
 
-    plt.title(f'Trajectory', fontsize=14)
+    #plt.title(f'Trajectory')
     plt.xlabel('X (m)')
     plt.ylabel('Y (m)')
 
     plt.grid(True, linestyle='--', alpha=0.6)
 
-    plt.legend()
+    plt.legend(
+        fontsize=9,
+        loc='upper left',
+        bbox_to_anchor=(1.02, 1.0),
+        borderaxespad=0.
+    )
 
     plt.gca().set_aspect('equal', adjustable='box')
 
     plt.tight_layout()
-    plt.savefig(f'charts/trajectory{name}.pdf')
+    plt.savefig(f'{charts_path}/trajectory{name}.pdf')
+
+def generate_fusion_chart(df_true, df_all, side_length, name, charts_path):
+    plt.figure(figsize=(10, 10))
+
+    # Traiettoria reale
+    plt.plot(df_true['PositionX'], df_true['PositionY'],
+             linestyle='--', linewidth=2, label='Real trajectory')
+
+    # Nuvola
+    plt.scatter(df_all['estimatedX'], df_all['estimatedY'],
+                color='red', alpha=0.05, s=10, label='All estimations')
+
+    plt.legend(
+        fontsize=9,
+        borderaxespad=0.
+    )
+    plt.axis('equal')
+    plt.xlim(0, 100)
+    plt.ylim(0, 60)
+    plt.grid(True)
+    plt.savefig(f'{charts_path}/trajectory{name}.pdf')
 
 if __name__ == '__main__':
 
-    centralized = False
-    Path('charts').mkdir(parents=True, exist_ok=True)
+    # Set matplotlib parameters
+    matplotlib.rcParams.update({'axes.titlesize': 45})
+    matplotlib.rcParams.update({'axes.labelsize': 35})
+    matplotlib.rcParams.update({'xtick.labelsize': 30})
+    matplotlib.rcParams.update({'ytick.labelsize': 30})
+    matplotlib.rcParams.update({"text.usetex": True})
+    matplotlib.rcParams.update({'legend.fontsize': 28})
+    matplotlib.rcParams.update({'legend.title_fontsize': 25})
+    matplotlib.rc('text.latex', preamble=r'\usepackage{amsmath,amssymb,amsfonts}')
 
-    if centralized:
-        generate_charts()
-    else:
-        num_nodes = 4
-        for i in range(num_nodes):
-            generate_charts(name=f'_node-{i}')
+    experiments = [('radius25-16nodes',16)] #[('singlesensor', 1), ('grid2x1', 2), ('grid3x3', 9),('grid5x5', 25)]
+
+    for experiment, num_sensors in experiments:
+        charts_path = f'charts-{experiment}'
+        Path(charts_path).mkdir(parents=True, exist_ok=True)
+        data_path = f'data'
+
+        # df_true = read_alchemist_csv(f'data/track-movement-neighboring-aggregation-leader-based/track-movement-neighboring-aggregation-leader-based_numberOfParticles-250_maxInitialSpeed-2.0_neighboringDistance-55.0_blindSpotDistance-55.0_numberOfSensorsForSide-3_stepLength-50_seed-42.0.csv')
+        # df_true = read_alchemist_csv(f'data/track-movement-neighboring-aggregation-leader-based/track-movement-neighboring-aggregation-leader-based_numberOfParticles-250_maxInitialSpeed-2.0_neighboringDistance-55.0_blindSpotDistance-55.0_numberOfSensorsForSide-4_stepLength-50_seed-42.0.csv')
+        df_true = read_alchemist_csv(f'data/track-movement-neighboring-aggregation-leader-based/track-movement-neighboring-aggregation-leader-based_numberOfParticles-250_maxInitialSpeed-2.0_neighboringDistance-25.0_blindSpotDistance-25.0_numberOfSensorsForSide-4_stepLength-20_seed-42.0.csv')
+        # df_true = read_alchemist_csv(f'data/track-movement-neighboring-aggregation-leader-based/track-movement-neighboring-aggregation-leader-based_numberOfParticles-250_maxInitialSpeed-2.0_neighboringDistance-25.0_blindSpotDistance-25.0_numberOfSensorsForSide-3_stepLength-20_seed-42.0.csv')
+
+        dfs = []
+
+        for i in range(num_sensors):
+            df_estimation = pd.read_csv(f'{data_path}/estimations_node-{i}.csv')
+            generate_charts(df_true, df_estimation, f'node-{i}', charts_path)
+            dfs.append(df_estimation)
+
+        # df_estimation_aggregated = pd.concat(dfs).groupby(level=0).mean()
+        df_estimation_aggregated = (
+            pd.concat(dfs)
+            .groupby(level=0)
+            .median()
+        )
+        df_all = pd.concat(dfs)
+        g = df_all.groupby(level=0)
+
+        generate_fusion_chart(df_true, df_all, 100, f'-{num_sensors}sensors-fusion', charts_path)
