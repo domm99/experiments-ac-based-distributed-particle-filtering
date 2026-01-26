@@ -1,8 +1,11 @@
 package it.unibo.filtering
 
+import it.unibo.alchemist.model.Environment
+import it.unibo.alchemist.model.molecules.SimpleMolecule
 import it.unibo.alchemist.util.RandomGenerators.nextDouble
 import kotlin.math.exp
 import kotlin.math.hypot
+import kotlin.math.log10
 import org.apache.commons.math3.random.RandomGenerator
 
 data class ParticleMemory(
@@ -40,30 +43,39 @@ class ParticleFilter(
 
     fun getAll(): List<Particle> = particles
 
-    fun predict(stdDev: Double = 1.0, dt: Double = 1.0) {
-        particles = particles.map { p ->
-            val nx = random.nextGaussian() * stdDev
-            val ny = random.nextGaussian() * stdDev
-            val nvx = random.nextGaussian() * stdDev
-            val nvy = random.nextGaussian() * stdDev
-            p.copy(
-                x = p.x + p.vx * dt + nx,
-                y = p.y + p.vy * dt + ny,
-                vx = p.vx + nvx,
-                vy = p.vy + nvy
-            )
-        }
+    // todo use local delta time per mettere il delta tempo
+    fun predict(stdDev: Double = 1.0, dt: Double = 1.0): List<Particle> {
+       particles = particles.map { p ->
+           // estimate previous position assuming stored velocity was used to get current position
+           val xPrev = p.x - p.vx * dt
+           val yPrev = p.y - p.vy * dt
+           // velocity estimate v_t = (x_t - x_{t-1}) / dt
+           val vEstX = (p.x - xPrev) / dt
+           val vEstY = (p.y - yPrev) / dt
+           // blend estimated velocity with stored velocity for stability
+           val alpha = 0.7
+           val baseVx = alpha * vEstX + (1 - alpha) * p.vx
+           val baseVy = alpha * vEstY + (1 - alpha) * p.vy
+           // process noise
+           val predVx = baseVx + random.nextGaussian() * stdDev
+           val predVy = baseVy + random.nextGaussian() * stdDev
+           p.copy(
+               x = p.x + predVx * dt + random.nextGaussian() * stdDev,
+               y = p.y + predVy * dt + random.nextGaussian() * stdDev,
+               vx = predVx,
+               vy = predVy
+           )
+       }
+        return particles
     }
 
     fun updateWithMeasurements(measurements: List<Point>) {
         if (measurements.isEmpty()) return
-
         particles.forEach { p ->
             val logLikelihood = measurements.sumOf { z ->
                 val d = hypot(p.x - z.x, p.y - z.y)
                 -0.5 * (d * d) / (measurementStdDev * measurementStdDev)
             } / measurements.size
-
             p.weight *= exp(logLikelihood)
         }
         normalize()
