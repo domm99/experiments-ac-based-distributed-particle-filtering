@@ -70,24 +70,33 @@ class ParticleFilter(
     }
 
     fun updateWithMeasurements(measurements: List<Point>) {
+        var maxLogW = Double.NEGATIVE_INFINITY
         if (measurements.isEmpty()) return
         particles.forEach { p ->
-            val logLikelihood = measurements.sumOf { z ->
-                val d = hypot(p.x - z.x, p.y - z.y)
-                -0.5 * (d * d) / (measurementStdDev * measurementStdDev)
-            } / measurements.size
-            p.weight *= exp(logLikelihood)
+            var newWeight = 0.0
+            measurements.forEach { m ->
+                val d = hypot(p.x - m.x, p.y - m.y)
+                val likelihood = -0.5 * (d * d) / (measurementStdDev * measurementStdDev)
+                newWeight += likelihood
+            }
+            p.weight = newWeight
+            if (newWeight > maxLogW) maxLogW = newWeight
         }
-        normalize()
-    }
-
-    private fun normalize() {
-        val sum = particles.sumOf { it.weight }
-        if (sum > 0.0) {
-            particles = particles.map { it.copy(weight = it.weight / sum) }
+        var totalWeight = 0.0
+        particles.forEach { particle ->
+            particle.weight = exp(particle.weight - maxLogW)
+            totalWeight += particle.weight
+        }
+        // Weights normalization
+        if (totalWeight > 0.0) {
+            for (p in particles) {
+                p.weight /= totalWeight
+            }
         } else {
-            val uniform = 1.0 / numberOfParticles
-            particles = particles.map { it.copy(weight = uniform) }
+            val uniformWeight = 1.0 / numberOfParticles
+            for (p in particles) {
+                p.weight = uniformWeight
+            }
         }
     }
 

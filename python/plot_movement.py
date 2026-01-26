@@ -107,7 +107,7 @@ if __name__ == '__main__':
     matplotlib.rcParams.update({'legend.title_fontsize': 25})
     matplotlib.rc('text.latex', preamble=r'\usepackage{amsmath,amssymb,amsfonts}')
 
-    experiments = [('radius25-16nodes',16)] #[('singlesensor', 1), ('grid2x1', 2), ('grid3x3', 9),('grid5x5', 25)]
+    experiments = [('radius25-16nodes',8)] #[('singlesensor', 1), ('grid2x1', 2), ('grid3x3', 9),('grid5x5', 25)]
 
     for experiment, num_sensors in experiments:
         charts_path = f'charts-{experiment}'
