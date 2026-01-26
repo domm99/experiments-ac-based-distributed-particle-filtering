@@ -12,16 +12,16 @@ variables:
     parameters: [ 2.0, [ 0.5, 1.0, 2.0, 5.0 ] ]
   neighboringDistance: &neighboringDistance
     type: ArbitraryVariable
-    parameters: [ 55.0, [ 55.0, 75.0, 100.0, 150.0, 200.0 ] ]
+    parameters: [ 25.0, [ 55.0, 75.0, 100.0, 150.0, 200.0 ] ]
   blindSpotDistance: &blindSpotDistance
     type: ArbitraryVariable
-    parameters: [ 55.0, [2.0, 5.0, 10.0, 25.0, 50.0, 100.0] ]
+    parameters: [ 25.0, [2.0, 5.0, 10.0, 25.0, 50.0, 100.0] ]
   numberOfSensorsForSide: &numberOfSensorsForSide
     type: ArbitraryVariable
-    parameters: [3, [1, 2, 3, 4, 5, 10]]
+    parameters: [4, [1, 2, 3, 4, 5, 10]]
   stepLength: &stepLength
     type: ArbitraryVariable
-    parameters: [50]
+    parameters: [20]
   size: &size
     formula: stepLength * numberOfSensorsForSide
   seed: &seed
@@ -107,4 +107,4 @@ export:
 
 terminate:
   type: AfterTime
-  parameters: 6000.0
+  parameters: 3000.0
