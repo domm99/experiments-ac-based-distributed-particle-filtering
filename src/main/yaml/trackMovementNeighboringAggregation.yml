@@ -7,15 +7,15 @@ variables:
   numberOfParticles: &numberOfParticles 250
   maxInitialSpeed: &maxInitialSpeed 2.0
   neighboringDistance: &neighboringDistance 100.0
-  numberOfSensorsForSide: &numberOfSensorsForSide 5
-  numberOfNeighbors: &numberOfNeighbors 1
+  numberOfNeighbors: &numberOfNeighbors
+    type: ArbitraryVariable
+    parameters: [ 1, [ 0, 1, 2, 3, 4, 5 ] ]
   stepLength: &stepLength 30
-  dataPath: &dataPath "data-1n"
-  size: &size
-    formula: 3 * 50
+  dataPath: &dataPath "data"
+  size: &size 150
   seed: &seed
     min: 0
-    max: 42
+    max: 10
     step: 1
     default: 42
 
@@ -47,7 +47,7 @@ _movement: &movement
 
 deployments:
   - type: Grid
-    parameters: [ 0, 0, *size, *size, *stepLength, *stepLength, 0, 0 ]
+    parameters: [ 0, 0, *size, *size, *stepLength, *stepLength, 1, 1 ]
     contents:
       - molecule: Filter
         concentration: true
@@ -74,16 +74,22 @@ deployments:
 
 launcher:
   parameters:
-    batch: [ seed ]
+    batch: [ seed, numberOfNeighbors ]
     showProgress: true
     autoStart: true
+
+  monitors:
+    - type: it.unibo.alchemist.model.monitors.ExportEstimations
+      parameters: [*seed, *numberOfNeighbors, *dataPath]
+    - type: it.unibo.alchemist.model.monitors.ExportSensorsDeployment
+      parameters: [*seed, *numberOfNeighbors, *dataPath]
 
 export:
   - type: CSVExporter
     parameters:
-      fileNameRoot: "track-movement-neighboring-aggregation"
+      fileNameRoot: "real-trajectory"
       interval: 1.0
-      exportPath: "data/track-movement-neighboring-aggregation"
+      exportPath: *dataPath
     data:
       - time
       - molecule: PositionX
