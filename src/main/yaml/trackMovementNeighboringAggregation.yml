@@ -78,11 +78,11 @@ launcher:
     showProgress: true
     autoStart: true
 
-  monitors:
-    - type: it.unibo.alchemist.model.monitors.ExportEstimations
-      parameters: [*seed, *numberOfNeighbors, *dataPath]
-    - type: it.unibo.alchemist.model.monitors.ExportSensorsDeployment
-      parameters: [*seed, *numberOfNeighbors, *dataPath]
+monitors:
+  - type: it.unibo.alchemist.model.monitors.ExportEstimations
+    parameters: [*seed, *numberOfNeighbors, *dataPath]
+  - type: it.unibo.alchemist.model.monitors.ExportSensorsDeployment
+    parameters: [*seed, *numberOfNeighbors, *dataPath]
 
 export:
   - type: CSVExporter
