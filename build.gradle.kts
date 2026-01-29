@@ -95,6 +95,7 @@ File(rootProject.rootDir.path + "/src/main/yaml")
         val capitalizedName = it.nameWithoutExtension.capitalizeString()
         val graphic by basetask("run${capitalizedName}Graphic") {
             group = alchemistGroupGraphic
+            val dataPath = "data-1n"
             args(
                 "--override",
                 """

@@ -6,9 +6,11 @@ _constants:
 variables:
   numberOfParticles: &numberOfParticles 250
   maxInitialSpeed: &maxInitialSpeed 2.0
-  neighboringDistance: &neighboringDistance 55.0
-  numberOfSensorsForSide: &numberOfSensorsForSide 3
-  stepLength: &stepLength 50
+  neighboringDistance: &neighboringDistance 100.0
+  numberOfSensorsForSide: &numberOfSensorsForSide 5
+  numberOfNeighbors: &numberOfNeighbors 1
+  stepLength: &stepLength 30
+  dataPath: &dataPath "data-1n"
   size: &size
     formula: 3 * 50
   seed: &seed
@@ -45,7 +47,7 @@ _movement: &movement
 
 deployments:
   - type: Grid
-    parameters: [ 0, 0, *size, *size, *stepLength, *stepLength, 1, 1 ]
+    parameters: [ 0, 0, *size, *size, *stepLength, *stepLength, 0, 0 ]
     contents:
       - molecule: Filter
         concentration: true
@@ -55,6 +57,8 @@ deployments:
         concentration: *maxInitialSpeed
       - molecule: SideLength
         concentration: *size
+      - molecule: NumberOfNeighbors
+        concentration: *numberOfNeighbors
     programs: *program
     properties:
       - type: it.unibo.collektive.alchemist.device.sensors.impl.LocationSensorProperty
