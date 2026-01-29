@@ -26,9 +26,7 @@ fun selectNeighbors(
     val remainingElements = originalList
         .filter { it.id != localID }
         .shuffled()
-    var takeCount = if (localEntry != null) n - 1 else n
-    takeCount = if (takeCount < 0) 0 else takeCount
-    val randomSelection = remainingElements.take(takeCount).toMutableList()
+    val randomSelection = remainingElements.take(n).toMutableList()
     localEntry?.let { randomSelection.add(0, it) }
     return randomSelection
 
