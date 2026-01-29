@@ -49,7 +49,7 @@ def generate_charts(data_dict, charts_path, filename):
 
     last_scatter = None
 
-    for ax, (name, (df_true, df_estimation)) in zip(axes, data_dict.items()):
+    for ax, (name, (df_true, df_estimation, sensors_positions)) in zip(axes, data_dict.items()):
 
         ax.plot(df_true['PositionX'], df_true['PositionY'],
                 label='Real Trajectory', color='black', linestyle='--', linewidth=2, alpha=0.5)
@@ -61,6 +61,7 @@ def generate_charts(data_dict, charts_path, filename):
             cmap='viridis',
             s=20,
             alpha=0.8,
+            zorder=4,
             label='Estimated'
         )
 
@@ -69,9 +70,19 @@ def generate_charts(data_dict, charts_path, filename):
         ax.scatter(df_true['PositionX'].iloc[-1], df_true['PositionY'].iloc[-1],
                    color='red', s=150, zorder=5, edgecolors='black', label='End')
 
+        ax.scatter(
+            sensors_positions['X'],
+            sensors_positions['Y'],
+            s=150,
+            zorder=3,
+            color='black',
+            edgecolors='black',
+            label='Sensors'
+        )
+
         ax.set_title(name, fontsize=35)
-        ax.set_xlim(0, side_length)
-        ax.set_ylim(0, side_length)
+        ax.set_xlim(-10, side_length)
+        ax.set_ylim(-10, side_length)
         ax.set_xlabel('X (m)', fontsize=25)
         if ax == axes[0]:
             ax.set_ylabel('Y (m)', fontsize=25)
@@ -82,7 +93,7 @@ def generate_charts(data_dict, charts_path, filename):
 
     handles, labels = axes[0].get_legend_handles_labels()
     leg = fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 1.1),
-               ncol=4, fontsize=25)
+               ncol=5, fontsize=25)
 
     for handle in leg.legend_handles:
         if hasattr(handle, 'set_sizes'):
@@ -122,7 +133,9 @@ if __name__ == '__main__':
 
         df_estimation_aggregated = pd.concat(dfs).groupby(level=0).mean()
 
-        data[experiment] = (df_true, df_estimation_aggregated)
+        sensors_positions = pd.read_csv(f'{data_path}/sensors-positions_n-{experiment}_seed-{seed_to_plot}.0.csv')
+
+        data[experiment] = (df_true, df_estimation_aggregated, sensors_positions)
 
     generate_charts(data, charts_path, 'trajectories')
 
