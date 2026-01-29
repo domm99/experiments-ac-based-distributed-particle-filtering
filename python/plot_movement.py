@@ -36,67 +36,93 @@ def read_alchemist_csv(path):
 def beautify_experiment_name(name):
     return name
 
-def generate_charts(df_true, df_estimation, name, charts_path):
+def generate_charts(data_dict, charts_path, filename):
 
+    num_experiments = len(data_dict)
     side_length = 100
 
-    plt.figure(figsize=(10, 10))
+    fig, axes = plt.subplots(1, num_experiments, figsize=(8 * num_experiments, 8),
+                             constrained_layout=True)
 
-    plt.plot(df_true['PositionX'], df_true['PositionY'],
-             label='Real Trajectory', color='blue', linestyle='--', linewidth=4, alpha=0.7)
+    if num_experiments == 1:
+        axes = [axes]
 
-    plt.plot(df_estimation['estimatedX'], df_estimation['estimatedY'],
-                 label='Estimated Trajectory', color='red', linestyle='--', linewidth=4, alpha=0.7)
+    last_scatter = None
 
-    # Initial point
-    plt.scatter(df_true['PositionX'].iloc[0], df_true['PositionY'].iloc[0],
-                color='green', s=200, label='Start', zorder=5, edgecolors='black')
+    for ax, (name, (df_true, df_estimation)) in zip(axes, data_dict.items()):
 
-    # Final point
-    plt.scatter(df_true['PositionX'].iloc[-1], df_true['PositionY'].iloc[-1],
-                color='red', s=200, label='End', zorder=5, edgecolors='black')
+        ax.plot(df_true['PositionX'], df_true['PositionY'],
+                label='Real Trajectory', color='black', linestyle='--', linewidth=2, alpha=0.5)
 
-    plt.xlim(0, side_length)
-    plt.ylim(0, side_length)
+        last_scatter = ax.scatter(
+            df_estimation['estimatedX'],
+            df_estimation['estimatedY'],
+            c=df_estimation.index,
+            cmap='viridis',
+            s=20,
+            alpha=0.8,
+            label='Estimated'
+        )
 
-    #plt.title(f'Trajectory')
-    plt.xlabel('X (m)', fontsize=40)
-    plt.ylabel('Y (m)', fontsize=40)
+        ax.scatter(df_true['PositionX'].iloc[0], df_true['PositionY'].iloc[0],
+                   color='green', s=150, zorder=5, edgecolors='black', label='Start')
+        ax.scatter(df_true['PositionX'].iloc[-1], df_true['PositionY'].iloc[-1],
+                   color='red', s=150, zorder=5, edgecolors='black', label='End')
 
-    plt.grid(True, linestyle='--', alpha=0.6)
+        ax.set_title(name, fontsize=35)
+        ax.set_xlim(0, side_length)
+        ax.set_ylim(0, side_length)
+        ax.set_xlabel('X (m)', fontsize=25)
+        if ax == axes[0]:
+            ax.set_ylabel('Y (m)', fontsize=25)
 
-    plt.legend(fontsize=30, title_fontsize=22)
+        ax.grid(True, linestyle='--', alpha=0.6)
+        ax.set_aspect('equal', adjustable='box')
+        ax.tick_params(labelsize=20)
 
-    plt.gca().set_aspect('equal', adjustable='box')
+    handles, labels = axes[0].get_legend_handles_labels()
+    leg = fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 1.1),
+               ncol=4, fontsize=25)
 
-    plt.xticks(fontsize=30)
-    plt.yticks(fontsize=30)
+    for handle in leg.legend_handles:
+        if hasattr(handle, 'set_sizes'):
+            handle.set_sizes([150])
+        elif hasattr(handle, 'set_linewidth'):
+            handle.set_linewidth(3)
 
-    plt.tight_layout()
-    plt.savefig(f'{charts_path}/trajectory{name}.pdf')
+    if last_scatter:
+        cbar = fig.colorbar(last_scatter, ax=axes, orientation='vertical', fraction=0.02, pad=0.04)
+        cbar.set_label('Time Steps', fontsize=20)
+        cbar.ax.tick_params(labelsize=15)
+
+    plt.savefig(f'{charts_path}/{filename}.pdf', bbox_inches='tight')
+    plt.close()
 
 if __name__ == '__main__':
 
     experiments = [0, 1, 3, 5]
 
-    seed_to_plot = 42
+    seed_to_plot = 5
+
+    charts_path = f'charts/'
+    Path(charts_path).mkdir(parents=True, exist_ok=True)
+    data_path = f'data'
 
     data = {}
 
     for experiment in experiments:
-        charts_path = f'charts/seed-{seed_to_plot}/{experiment}'
-        Path(charts_path).mkdir(parents=True, exist_ok=True)
-        data_path = f'data-{experiment}n'
 
-        df_true = read_alchemist_csv(f'{data_path}/track-movement-neighboring-aggregation_seed-{seed_to_plot}.0.csv')
+        df_true = read_alchemist_csv(f'{data_path}/real-trajectory_numberOfNeighbors-{experiment}_seed-{seed_to_plot}.0.csv')
 
         dfs = []
 
         for i in range(25):
-            df_estimation = pd.read_csv(f'{data_path}/estimations_node-{i}_seed-{seed_to_plot}.0.csv')
-            generate_charts(df_true, df_estimation, f'node-{i}', charts_path)
+            df_estimation = pd.read_csv(f'{data_path}/estimations_node-{i}_n-{experiment}_seed-{seed_to_plot}.0.csv')
             dfs.append(df_estimation)
 
         df_estimation_aggregated = pd.concat(dfs).groupby(level=0).mean()
-        generate_charts(df_true, df_estimation_aggregated, f'-{num_sensors}sensors', charts_path)
+
+        data[experiment] = (df_true, df_estimation_aggregated)
+
+    generate_charts(data, charts_path, 'trajectories')
 
