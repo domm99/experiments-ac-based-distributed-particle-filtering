@@ -33,6 +33,9 @@ def read_alchemist_csv(path):
     df = df.dropna()
     return df
 
+def beautify_experiment_name(name):
+    return name
+
 def generate_charts(df_true, df_estimation, name, charts_path):
 
     side_length = 100
@@ -74,20 +77,22 @@ def generate_charts(df_true, df_estimation, name, charts_path):
 
 if __name__ == '__main__':
 
-    experiments = [('grid1x1', 1), ('grid2x1', 2), ('grid3x3', 9),('grid5x5', 25)]
+    experiments = [0, 1, 3, 5]
 
     seed_to_plot = 42
 
-    for experiment, num_sensors in experiments:
+    data = {}
+
+    for experiment in experiments:
         charts_path = f'charts/seed-{seed_to_plot}/{experiment}'
         Path(charts_path).mkdir(parents=True, exist_ok=True)
-        data_path = f'data-{experiment}'
+        data_path = f'data-{experiment}n'
 
         df_true = read_alchemist_csv(f'{data_path}/track-movement-neighboring-aggregation_seed-{seed_to_plot}.0.csv')
 
         dfs = []
 
-        for i in range(num_sensors):
+        for i in range(25):
             df_estimation = pd.read_csv(f'{data_path}/estimations_node-{i}_seed-{seed_to_plot}.0.csv')
             generate_charts(df_true, df_estimation, f'node-{i}', charts_path)
             dfs.append(df_estimation)
