@@ -1,6 +1,7 @@
 package it.unibo.collektive
 
 import it.unibo.alchemist.collektive.device.CollektiveDevice
+import it.unibo.collektive.aggregate.FieldEntry
 import it.unibo.collektive.aggregate.api.Aggregate
 import it.unibo.collektive.aggregate.api.neighboring
 import it.unibo.collektive.alchemist.device.sensors.EnvironmentVariables
@@ -15,6 +16,23 @@ import org.apache.commons.math3.random.RandomGenerator
 const val p0 = -40
 const val pathLoss = 2
 const val measureStdDev = 0.5
+
+fun selectNeighbors(
+    originalList: List<FieldEntry<out Any, Pair<Point, Double>>>,
+    localID: Int,
+    n: Int
+): List<FieldEntry<out Any, Pair<Point, Double>>> {
+    val localEntry = originalList.find { it.id == localID }
+    val remainingElements = originalList
+        .filter { it.id != localID }
+        .shuffled()
+    var takeCount = if (localEntry != null) n - 1 else n
+    takeCount = if (takeCount < 0) 0 else takeCount
+    val randomSelection = remainingElements.take(takeCount).toMutableList()
+    localEntry?.let { randomSelection.add(0, it) }
+    return randomSelection
+
+}
 
 /**
  * The entrypoint of the simulation performing local information filtering.
@@ -48,6 +66,7 @@ fun Aggregate<*>.localFiltering(
     env["NumberOfParticles"] = numberOfParticles
     previous.add(filter.getAll())
     env["Particles"] = previous
+    val numberOfNeighbors = env.getOrDefault("NumberOfNeighbors", 0)
     val sampledParticles = filter.resample()
     val newParticles = filter.predictParticles(sampledParticles)
     val selfPosition = position.selfPosition()
@@ -55,11 +74,12 @@ fun Aggregate<*>.localFiltering(
     val distance = hypot(targetPosition.x - selfPosition.x, targetPosition.y - selfPosition.y)
     val measure = p0 - 10 * pathLoss * log10(distance) + random.nextGaussian() * measureStdDev
 
-    val neighborsInfo =
+    val info =
         neighboring(selfPosition to measure)
             .all.list
-            .mapNotNull { it.value }
 
+    val neighborsInfo = selectNeighbors(info, localId as Int, numberOfNeighbors)
+            .mapNotNull { it.value }
 
     filter.updateWeights(newParticles, neighborsInfo)
     val estimation = filter.estimatePosition()
