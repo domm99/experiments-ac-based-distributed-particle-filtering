@@ -57,16 +57,7 @@ def compute_mean_stdev_rmses(rmses):
     return means, stddev
 
 def beutify_experiment_name(name):
-    if '1' in name:
-        return '1 Sensor'
-    elif '2' in name:
-        return '2 Sensors'
-    elif '3' in name:
-        return '9 Sensors'
-    elif '5' in name:
-        return '25 Sensors'
-    else:
-        raise ValueError('Unknown experiment name')
+    return name
 
 def plot_rmse(data, charts_path):
     sns.set_theme(style="whitegrid")
@@ -104,7 +95,7 @@ def plot_rmse(data, charts_path):
 if __name__ == '__main__':
 
 
-    experiments = [('grid1x1', 1), ('grid2x1', 2), ('grid3x3', 9),('grid5x5', 25)]
+    experiments = [0, 1, 3, 5]
 
     max_seed = 100
 
@@ -112,13 +103,14 @@ if __name__ == '__main__':
 
     charts_path = f'charts/'
     Path(charts_path).mkdir(parents=True, exist_ok=True)
+    num_sensors = 25
 
-    for (experiment, num_sensors) in experiments:
-        data_path = f'data-{experiment}'
+    for experiment in experiments:
+        data_path = f'data-{experiment}n'
 
         rmses_by_seed = {}
 
-        for seed in range(max_seed):
+        for seed in [42]: #range(max_seed)
             df_true = read_alchemist_csv(f'{data_path}/track-movement-neighboring-aggregation_seed-{seed}.0.csv')
             df_true = df_true.dropna()
 
