@@ -36,17 +36,16 @@ def read_alchemist_csv(path):
     return df
 
 def compute_rmse(df_true, dfs, max_time=3000):
-    rmse = []
-    for t in range(max_time):
-        errors = []
-        true_trajectory = df_true.iloc[t]
+        true_x = df_true['PositionX'].values[:max_time]
+        true_y = df_true['PositionY'].values[:max_time]
+        all_errors = []
+
         for df in dfs:
-            estimation = df.iloc[t]
-            error = np.sqrt((true_trajectory['PositionX'] - estimation['estimatedX'])**2
-                            + (true_trajectory['PositionY'] - estimation['estimatedY'])**2)
-            errors.append(error)
-        rmse.append(np.mean(errors))
-    return rmse
+            est_x = df['estimatedX'].values[:max_time]
+            est_y = df['estimatedY'].values[:max_time]
+            dist = np.sqrt((true_x - est_x)**2 + (true_y - est_y)**2)
+            all_errors.append(dist)
+        return np.mean(np.array(all_errors), axis=0)
 
 def compute_mean_stdev_rmses(rmses):
     rmse_matrix = np.array(list(rmses.values()))
@@ -87,7 +86,7 @@ def plot_rmse(data, charts_path):
     plt.ylabel("RMSE", fontsize=30)
     plt.xticks(fontsize=18)
     plt.yticks(fontsize=18)
-    plt.legend(title="Experiments", fontsize=18, title_fontsize=22)
+    plt.legend(title="#Neighbors", fontsize=18, title_fontsize=22, loc='center right')
     plt.tight_layout()
     plt.savefig(f'{charts_path}/rmse.pdf')
     plt.close()
@@ -95,9 +94,9 @@ def plot_rmse(data, charts_path):
 if __name__ == '__main__':
 
 
-    experiments = [0, 1, 3, 5]
+    experiments = [0, 2, 4, 7]
 
-    max_seed = 100
+    max_seed = 30
 
     data = {}
 
@@ -106,17 +105,17 @@ if __name__ == '__main__':
     num_sensors = 25
 
     for experiment in experiments:
-        data_path = f'data-{experiment}n'
+        data_path = f'data'
 
         rmses_by_seed = {}
 
-        for seed in [42]: #range(max_seed)
-            df_true = read_alchemist_csv(f'{data_path}/track-movement-neighboring-aggregation_seed-{seed}.0.csv')
+        for seed in range(max_seed):
+            df_true = read_alchemist_csv(f'{data_path}/real-trajectory_numberOfNeighbors-{experiment}_seed-{seed}.0.csv')
             df_true = df_true.dropna()
 
             dfs = []
             for i in range(num_sensors):
-                df_estimation = pd.read_csv(f'{data_path}/estimations_node-{i}_seed-{seed}.0.csv')
+                df_estimation = pd.read_csv(f'{data_path}/estimations_node-{i}_n-{experiment}_seed-{seed}.0.csv')
                 dfs.append(df_estimation)
 
             rmses = compute_rmse(df_true, dfs)
