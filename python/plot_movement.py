@@ -69,16 +69,16 @@ def generate_charts(data_dict, charts_path, filename):
                    color='green', s=150, zorder=5, edgecolors='black', label='Start')
         ax.scatter(df_true['PositionX'].iloc[-1], df_true['PositionY'].iloc[-1],
                    color='red', s=150, zorder=5, edgecolors='black', label='End')
+#  ax.scatter(
+#             sensors_positions['X'],
+#             sensors_positions['Y'],
+#             s=150,
+#             zorder=3,
+#             color='black',
+#             edgecolors='black',
+#             label='Sensors'
+#         )
 
-        ax.scatter(
-            sensors_positions['X'],
-            sensors_positions['Y'],
-            s=150,
-            zorder=3,
-            color='black',
-            edgecolors='black',
-            label='Sensors'
-        )
 
         ax.set_title(name, fontsize=35)
         ax.set_xlim(-10, side_length)
@@ -105,15 +105,19 @@ def generate_charts(data_dict, charts_path, filename):
         cbar = fig.colorbar(last_scatter, ax=axes, orientation='vertical', fraction=0.02, pad=0.04)
         cbar.set_label('Time Steps', fontsize=20)
         cbar.ax.tick_params(labelsize=15)
+        vmin = df_estimation.index.min()
+        vmax = df_estimation.index.max()
+        cbar.set_ticks([vmin, vmax])
+        cbar.set_ticklabels([f'{vmin}', f'{vmax}'])
 
     plt.savefig(f'{charts_path}/{filename}.pdf', bbox_inches='tight')
     plt.close()
 
 if __name__ == '__main__':
 
-    experiments = [0, 1, 3, 5]
+    experiments = [0, 2, 4, 7]
 
-    seed_to_plot = 5
+    seed_to_plot = 22
 
     charts_path = f'charts/'
     Path(charts_path).mkdir(parents=True, exist_ok=True)
