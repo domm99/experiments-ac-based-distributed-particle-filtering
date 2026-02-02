@@ -14,7 +14,9 @@ import java.util.Locale
 class ExportSensorsDeployment<T>(val seed: Double, val numberOfNeighbors: Int, val dataPath: String) : OutputMonitor<T, Euclidean2DPosition> {
 
     override fun finished(environment: Environment<T?, Euclidean2DPosition>, time: Time, step: Long) {
-        val filters = environment.nodes.filter { it.contains(SimpleMolecule("Filter")) }
+        val filters = environment.nodes
+            .filter { it.contains(SimpleMolecule("Filter")) }
+            .filter { hasEstimations(it) }
 
         val positions = filters
             .map {

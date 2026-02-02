@@ -2,6 +2,7 @@ package it.unibo.alchemist.model.monitors
 
 import it.unibo.alchemist.boundary.OutputMonitor
 import it.unibo.alchemist.model.Environment
+import it.unibo.alchemist.model.Node
 import it.unibo.alchemist.model.Time
 import it.unibo.alchemist.model.molecules.SimpleMolecule
 import it.unibo.alchemist.model.positions.Euclidean2DPosition
@@ -12,6 +13,12 @@ import java.util.Locale
 
 class Line(vararg val values: Any)
 
+fun <T> hasEstimations(node: Node<T>): Boolean {
+    val e = node.getConcentration(SimpleMolecule("Estimations")) as? MutableList<Point>
+        ?: mutableListOf()
+    return e.isNotEmpty()
+}
+
 /**
  * Exports the estimations made by filter nodes to CSV files upon simulation completion.
  */
@@ -19,7 +26,9 @@ class ExportEstimations<T>(val seed: Double, val numberOfNeighbors: Int, val dat
 
     override fun finished(environment: Environment<T?, Euclidean2DPosition>, time: Time, step: Long) {
         try{
-            val filters = environment.nodes.filter { it.contains(SimpleMolecule("Filter")) }
+            val filters = environment.nodes
+                .filter { it.contains(SimpleMolecule("Filter")) }
+                .filter { hasEstimations(it) }
 
             filters.forEach { filter ->
                 val estimations = filter.getConcentration(SimpleMolecule("Estimations")) as MutableList<Point>
@@ -50,7 +59,7 @@ class ExportEstimations<T>(val seed: Double, val numberOfNeighbors: Int, val dat
 //                )
             }
         }catch (e: Exception) {
-            println(e.stackTrace)
+            println(e.message)
         }
     }
 
