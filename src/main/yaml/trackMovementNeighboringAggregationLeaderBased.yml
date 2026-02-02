@@ -6,7 +6,7 @@ _constants:
 variables:
   numberOfParticles: &numberOfParticles 250
   maxInitialSpeed: &maxInitialSpeed 2.0
-  neighboringDistance: &neighboringDistance 300.0
+  neighboringDistance: &neighboringDistance 35.0
   stepLength: &stepLength 30
   dataPath: &dataPath "data"
   size: &size 150
