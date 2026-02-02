@@ -115,9 +115,9 @@ def generate_charts(data_dict, charts_path, filename):
 
 if __name__ == '__main__':
 
-    experiments = [0, 2, 4, 7]
+    experiments = [0]#, 2, 4, 7]
 
-    seed_to_plot = 22
+    seed_to_plot = 42
 
     charts_path = f'charts/'
     Path(charts_path).mkdir(parents=True, exist_ok=True)
@@ -127,11 +127,12 @@ if __name__ == '__main__':
 
     for experiment in experiments:
 
-        df_true = read_alchemist_csv(f'{data_path}/real-trajectory_numberOfNeighbors-{experiment}_seed-{seed_to_plot}.0.csv')
+        #df_true = read_alchemist_csv(f'{data_path}/real-trajectory_numberOfNeighbors-{experiment}_seed-{seed_to_plot}.0.csv')
+        df_true = read_alchemist_csv(f'{data_path}/real-trajectory_seed-{seed_to_plot}.0.csv')
 
         dfs = []
 
-        for i in range(25):
+        for i in [12]: #range(25):
             df_estimation = pd.read_csv(f'{data_path}/estimations_node-{i}_n-{experiment}_seed-{seed_to_plot}.0.csv')
             dfs.append(df_estimation)
 
