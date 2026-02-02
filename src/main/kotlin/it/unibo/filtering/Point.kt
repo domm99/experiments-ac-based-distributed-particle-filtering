@@ -1,5 +1,7 @@
 package it.unibo.filtering
 
+import kotlin.math.hypot
+
 /**
  * A simple data class representing a point in 2D space.
  *
@@ -34,3 +36,5 @@ operator fun Point.plus(other: Point): Point = Point(this.x + other.x, this.y + 
  * @return Point the resulting point after subtraction
  */
 operator fun Point.div(scalar: Double): Point = Point(this.x / scalar, this.y / scalar)
+
+fun Point.distanceTo(other: Point): Double = hypot(this.x - other.x, this.y - other.y)
