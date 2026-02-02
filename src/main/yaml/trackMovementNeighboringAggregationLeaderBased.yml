@@ -48,7 +48,7 @@ environment:
   global-programs:
     - time-distribution:
         type: Trigger
-        parameters: [ 15.5 ]
+        parameters: [ 1500 ]
       type: KillLeader
       parameters: [  ]
 
