@@ -23,13 +23,18 @@ fun selectNeighbors(
     n: Int
 ): List<FieldEntry<out Any, Pair<Point, Double>>> {
     val localEntry = originalList.find { it.id == localID }
-    val remainingElements = originalList
-        .filter { it.id != localID }
-        .shuffled()
-    val randomSelection = remainingElements.take(n).toMutableList()
-    localEntry?.let { randomSelection.add(0, it) }
-    return randomSelection
+    val localPoint = localEntry!!.value.first
 
+    return originalList
+        .filter { it.id != localID }
+        .sortedBy { entry ->
+            val targetPoint = entry.value.first
+            val dx = targetPoint.x - localPoint.x
+            val dy = targetPoint.y - localPoint.y
+            (dx * dx) + (dy * dy)
+        }
+        .take(n)
+        .let { listOf(localEntry) + it }
 }
 
 /**
