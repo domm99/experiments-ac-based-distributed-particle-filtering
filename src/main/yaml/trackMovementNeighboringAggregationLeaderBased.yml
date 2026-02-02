@@ -64,6 +64,8 @@ deployments:
         concentration: *maxInitialSpeed
       - molecule: SideLength
         concentration: *size
+      - molecule: isDown
+        concentration: false
     programs: *program
     properties:
       - type: it.unibo.collektive.alchemist.device.sensors.impl.LocationSensorProperty
