@@ -67,11 +67,12 @@ fun Aggregate<*>.localFiltering(
 ): List<Point> = evolving(ParticleFilter(numberOfParticles, maxInitialSpeed, sideLength, random)) { filter ->
     val previous = env.getOrDefault("Particles", mutableListOf<List<Particle>>())
     env["NumberOfParticles"] = numberOfParticles
-    previous.add(filter.getAll())
+    previous.add(filter.getAll()) // TODO - this is redundant
     env["Particles"] = previous
     val numberOfNeighbors = env.getOrDefault("NumberOfNeighbors", 0)
     val sampledParticles = filter.resample()
     val newParticles = filter.predictParticles(sampledParticles)
+
     val selfPosition = position.selfPosition()
     val targetPosition = position.targetsPosition().first()
     val distance = hypot(targetPosition.x - selfPosition.x, targetPosition.y - selfPosition.y)
