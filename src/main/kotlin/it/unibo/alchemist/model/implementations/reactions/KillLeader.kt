@@ -54,10 +54,8 @@ class KillLeader<T, P: Position<P>> (
             executed = true
             val leader = nodes
                 .first { it.getConcentration(SimpleMolecule("isLeader")) as Boolean }
-            println(leader.reactions)
-            leader.removeReaction(leader.reactions.first())
+            leader.setConcentration(SimpleMolecule("isDown"), true as T)
             leader.setConcentration(SimpleMolecule("isLeader"), false as T)
-            println(leader.reactions)
         }
     }
 
