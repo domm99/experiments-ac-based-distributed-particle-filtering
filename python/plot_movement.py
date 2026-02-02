@@ -108,7 +108,7 @@ def generate_charts(data_dict, charts_path, filename):
         vmin = df_estimation.index.min()
         vmax = df_estimation.index.max()
         cbar.set_ticks([vmin, vmax])
-        cbar.set_ticklabels([f'{vmin}', f'{vmax}'])
+        cbar.set_ticklabels(['0', '3000'])
 
     plt.savefig(f'{charts_path}/{filename}.pdf', bbox_inches='tight')
     plt.close()
