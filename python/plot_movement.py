@@ -125,22 +125,35 @@ if __name__ == '__main__':
 
     data = {}
 
-    for experiment in experiments:
+    df_true = read_alchemist_csv(f'{data_path}/real-trajectory_seed-{seed_to_plot}.0.csv')
 
-        #df_true = read_alchemist_csv(f'{data_path}/real-trajectory_numberOfNeighbors-{experiment}_seed-{seed_to_plot}.0.csv')
-        df_true = read_alchemist_csv(f'{data_path}/real-trajectory_seed-{seed_to_plot}.0.csv')
-
-        dfs = []
-
-        for i in [12]: #range(25):
-            df_estimation = pd.read_csv(f'{data_path}/estimations_node-{i}_n-{experiment}_seed-{seed_to_plot}.0.csv')
-            dfs.append(df_estimation)
-
-        df_estimation_aggregated = pd.concat(dfs).groupby(level=0).mean()
-
-        sensors_positions = pd.read_csv(f'{data_path}/sensors-positions_n-{experiment}_seed-{seed_to_plot}.0.csv')
-
-        data[experiment] = (df_true, df_estimation_aggregated, sensors_positions)
-
+    df_first_leader  = pd.read_csv(f'{data_path}/estimations_node-12_n-0_seed-{seed_to_plot}.0.csv')
+    df_second_leader  = pd.read_csv(f'{data_path}/estimations_node-11_n-0_seed-{seed_to_plot}.0.csv')
+    df_final = pd.concat([df_first_leader, df_second_leader], ignore_index=True)
+    print(df_first_leader.shape)
+    print(df_second_leader.shape)
+    print(df_final.shape)
+    sensors_positions = pd.read_csv(f'{data_path}/sensors-positions_n-0_seed-{seed_to_plot}.0.csv')
+    data[0] = (df_true, df_final, sensors_positions)
+    #data[1] = (df_true, df_second_leader, sensors_positions)
     generate_charts(data, charts_path, 'trajectories')
+
+    # for experiment in experiments:
+    #
+    #     #df_true = read_alchemist_csv(f'{data_path}/real-trajectory_numberOfNeighbors-{experiment}_seed-{seed_to_plot}.0.csv')
+    #     df_true = read_alchemist_csv(f'{data_path}/real-trajectory_seed-{seed_to_plot}.0.csv')
+    #
+    #     dfs = []
+    #
+    #     for i in [12]: #range(25):
+    #         df_estimation = pd.read_csv(f'{data_path}/estimations_node-{i}_n-{experiment}_seed-{seed_to_plot}.0.csv')
+    #         dfs.append(df_estimation)
+    #
+    #     df_estimation_aggregated = pd.concat(dfs).groupby(level=0).mean()
+    #
+    #     sensors_positions = pd.read_csv(f'{data_path}/sensors-positions_n-{experiment}_seed-{seed_to_plot}.0.csv')
+    #
+    #     data[experiment] = (df_true, df_estimation_aggregated, sensors_positions)
+    #
+    # generate_charts(data, charts_path, 'trajectories')
 
