@@ -103,9 +103,9 @@ File(rootProject.rootDir.path + "/src/main/yaml")
                         - type: SwingGUI
                           parameters: { graphics: effects/${it.nameWithoutExtension}.json }
                         - type: it.unibo.alchemist.model.monitors.ExportEstimations
-                          parameters: [42, 0, "data-graphic"]
+                          parameters: [42, 0, "data"]
                         - type: it.unibo.alchemist.model.monitors.ExportSensorsDeployment
-                          parameters: [42, 0, "data-graphic"]
+                          parameters: [42, 0, "data"]
                 """.trimIndent(),
                 "--override",
                 "launcher: { parameters: { batch: [], autoStart: false } }",
