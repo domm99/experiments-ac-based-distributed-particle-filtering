@@ -9,13 +9,13 @@ variables:
   neighboringDistance: &neighboringDistance 100.0
   numberOfNeighbors: &numberOfNeighbors
     type: ArbitraryVariable
-    parameters: [ 1, [ 0, 1, 2, 3, 4, 5 ] ]
+    parameters: [ 0, [ 6] ]
   stepLength: &stepLength 30
   dataPath: &dataPath "data"
   size: &size 150
   seed: &seed
     min: 0
-    max: 10
+    max: 30
     step: 1
     default: 42
 
@@ -102,4 +102,4 @@ export:
 
 terminate:
   type: AfterTime
-  parameters: 2000.0
+  parameters: 3000.0
