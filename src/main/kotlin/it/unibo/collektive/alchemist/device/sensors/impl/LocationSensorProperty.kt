@@ -46,7 +46,7 @@ class LocationSensorProperty<T : Any, P : Position<P>>(
             val newX = position.coordinates[0]
             val newY = position.coordinates[1]
             Point(newX, newY)
-            }
+        }
 
     override fun selfPosition(): Point {
         val selfPos = environment.getPosition(node)
