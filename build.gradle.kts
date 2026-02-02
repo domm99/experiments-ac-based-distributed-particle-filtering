@@ -48,7 +48,7 @@ val heap: Long = maxHeap ?: if (System.getProperty("os.name").lowercase().contai
     14 * 1024L
 }
 val taskSizeFromProject: Int? by project
-val taskSize = taskSizeFromProject ?: 512
+val taskSize = taskSizeFromProject ?: 512000
 val threadCount = maxOf(1, minOf(Runtime.getRuntime().availableProcessors(), heap.toInt() / taskSize))
 val alchemistGroupBatch = "Run batch simulations"
 val alchemistGroupGraphic = "Run graphic simulations with Alchemist"
@@ -103,7 +103,9 @@ File(rootProject.rootDir.path + "/src/main/yaml")
                         - type: SwingGUI
                           parameters: { graphics: effects/${it.nameWithoutExtension}.json }
                         - type: it.unibo.alchemist.model.monitors.ExportEstimations
+                          parameters: [42, 0, "data-graphic"]
                         - type: it.unibo.alchemist.model.monitors.ExportSensorsDeployment
+                          parameters: [42, 0, "data-graphic"]
                 """.trimIndent(),
                 "--override",
                 "launcher: { parameters: { batch: [], autoStart: false } }",
