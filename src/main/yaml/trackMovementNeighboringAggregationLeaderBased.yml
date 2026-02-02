@@ -6,13 +6,15 @@ _constants:
 variables:
   numberOfParticles: &numberOfParticles 250
   maxInitialSpeed: &maxInitialSpeed 2.0
-  neighboringDistance: &neighboringDistance 35.0
+  neighboringDistance: &neighboringDistance
+    type: ArbitraryVariable
+    parameters: [ 35 , [ 35, 50, 240 ] ]
   stepLength: &stepLength 30
-  dataPath: &dataPath "data"
+  dataPath: &dataPath "data-leader"
   size: &size 150
   seed: &seed
-    min: 0
-    max: 30
+    min: 42
+    max: 42
     step: 1
     default: 42
 
@@ -81,15 +83,17 @@ deployments:
 
 launcher:
   parameters:
-    batch: [ seed, numberOfNeighbors ]
+    batch: [ seed, neighboringDistance ]
     showProgress: true
     autoStart: true
 
 monitors:
   - type: it.unibo.alchemist.model.monitors.ExportEstimations
-    parameters: [*seed, 0, *dataPath]
+    parameters: [*seed, *neighboringDistance, *dataPath]
   - type: it.unibo.alchemist.model.monitors.ExportSensorsDeployment
-    parameters: [*seed, 0, *dataPath]
+    parameters: [*seed, *neighboringDistance, *dataPath]
+  - type: it.unibo.alchemist.model.monitors.ExportLeadersList
+    parameters: [ *seed, *neighboringDistance, *dataPath ]
 
 export:
   - type: CSVExporter
