@@ -31,15 +31,20 @@ fun Aggregate<Int>.informationFilterEntrypointLeaderBased(
     env: EnvironmentVariables,
     position: LocationSensor,
 ) = context(env, collektiveDevice.randomGenerator, position, collektiveDevice) {
-    val sideLength = env["SideLength"] as Int
-    val numberOfParticles = env["NumberOfParticles"] as Int
-    val maxInitialSpeed = env["MaxInitialSpeed"] as Double
-    val isLeader = isLeaderBasedOnLocation(sideLength).also { env["isLeader"] = it }
-    val estimations = env.getOrDefault("Estimations", listOf<Point>())
-    with(env) {
-        sensorsExecution(isLeader, estimations, numberOfParticles, maxInitialSpeed, sideLength.toDouble())
-    }.also { history ->
-        env["Estimations"] = history
+
+    val isDown = env["isDown"] as Boolean
+
+    if(!isDown) {
+        val sideLength = env["SideLength"] as Int
+        val numberOfParticles = env["NumberOfParticles"] as Int
+        val maxInitialSpeed = env["MaxInitialSpeed"] as Double
+        val isLeader = isLeaderBasedOnLocation(sideLength).also { env["isLeader"] = it }
+        val estimations = env.getOrDefault("Estimations", listOf<Point>())
+        with(env) {
+            sensorsExecution(isLeader, estimations, numberOfParticles, maxInitialSpeed, sideLength.toDouble())
+        }.also { history ->
+            env["Estimations"] = history
+        }
     }
 }
 
