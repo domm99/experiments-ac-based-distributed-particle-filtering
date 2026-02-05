@@ -59,7 +59,7 @@ def beutify_experiment_name(name):
     return name
 
 def plot_rmse(data, charts_path):
-    sns.set_theme(style="whitegrid")
+    #sns.set_theme(style="whitegrid")
 
     n_exp = len(data)
     palette = sns.color_palette("viridis", n_exp)
@@ -86,7 +86,9 @@ def plot_rmse(data, charts_path):
     plt.ylabel("RMSE", fontsize=30)
     plt.xticks(fontsize=18)
     plt.yticks(fontsize=18)
-    plt.legend(title="#Neighbors", fontsize=18, title_fontsize=22, loc='center right')
+    plt.grid(True, linestyle='--', alpha=0.6)
+    plt.yscale('log')
+    plt.legend(title="|N|", fontsize=18, title_fontsize=22, loc='center right')
     plt.tight_layout()
     plt.savefig(f'{charts_path}/rmse.pdf')
     plt.close()
@@ -94,7 +96,7 @@ def plot_rmse(data, charts_path):
 if __name__ == '__main__':
 
 
-    experiments = [0, 2, 4, 7]
+    experiments = [0, 1, 4, 7]
 
     max_seed = 30
 
