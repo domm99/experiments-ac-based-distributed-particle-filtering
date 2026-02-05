@@ -52,7 +52,9 @@ def generate_charts(data_dict, charts_path, filename):
     for ax, (name, (df_true, df_estimation, sensors_positions)) in zip(axes, data_dict.items()):
 
         ax.plot(df_true['PositionX'], df_true['PositionY'],
-                label='Real Trajectory', color='black', linestyle='--', linewidth=2, alpha=0.5)
+                label='Real Trajectory', color='black', linestyle='--', linewidth=3, alpha=0.5)
+
+        ax.axvline(x=48.9, color='red', linestyle='--', label='FC Failure', linewidth=2)
 
         last_scatter = ax.scatter(
             df_estimation['estimatedX'],
@@ -80,20 +82,20 @@ def generate_charts(data_dict, charts_path, filename):
 #         )
 
 
-        ax.set_title(f'|N| = {name}', fontsize=32, pad=20)
+#         ax.set_title(name, fontsize=35)
         ax.set_xlim(-10, side_length)
         ax.set_ylim(-10, side_length)
-        ax.set_xlabel('X (m)', fontsize=27)
+        ax.set_xlabel('X (m)', fontsize=35)
         if ax == axes[0]:
-            ax.set_ylabel('Y (m)', fontsize=27)
+            ax.set_ylabel('Y (m)', fontsize=35)
 
         ax.grid(True, linestyle='--', alpha=0.6)
         ax.set_aspect('equal', adjustable='box')
-        ax.tick_params(labelsize=22)
+        ax.tick_params(labelsize=25)
 
     handles, labels = axes[0].get_legend_handles_labels()
-    leg = fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 1.1),
-               ncol=5, fontsize=25)
+    leg = fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 1),
+               ncol=3, fontsize=25)
 
     for handle in leg.legend_handles:
         if hasattr(handle, 'set_sizes'):
@@ -102,59 +104,63 @@ def generate_charts(data_dict, charts_path, filename):
             handle.set_linewidth(3)
 
     if last_scatter:
-        cbar = fig.colorbar(last_scatter, ax=axes, orientation='vertical', fraction=0.02, pad=0.04)
+        cbar = fig.colorbar(last_scatter, ax=axes, orientation='vertical', fraction=0.05, pad=0.04)
         cbar.set_label('Time Steps', fontsize=25)
-        cbar.ax.tick_params(labelsize=20)
+        cbar.ax.tick_params(labelsize=15)
         vmin = df_estimation.index.min()
         vmax = df_estimation.index.max()
         cbar.set_ticks([vmin, vmax])
         cbar.set_ticklabels(['0', '3000'])
+        cbar.ax.tick_params(labelsize=22, width=2)
 
     plt.savefig(f'{charts_path}/{filename}.pdf', bbox_inches='tight')
     plt.close()
 
 if __name__ == '__main__':
 
-    experiments = [0, 1, 4, 7]
+    experiments = [35]
 
-    #seed_to_plot = 32
+    seed_to_plot = 42
 
     charts_path = f'charts/'
     Path(charts_path).mkdir(parents=True, exist_ok=True)
-    data_path = f'data'
+    data_path = f'data-leader'
 
-    for seed_to_plot in range(100):
-        data = {}
+    data = {}
 
-    #     df_true = read_alchemist_csv(f'{data_path}/real-trajectory_seed-{seed_to_plot}.0.csv')
-    #
-    #     df_first_leader  = pd.read_csv(f'{data_path}/estimations_node-12_n-0_seed-{seed_to_plot}.0.csv')
-    #     df_second_leader  = pd.read_csv(f'{data_path}/estimations_node-11_n-0_seed-{seed_to_plot}.0.csv')
-    #     df_final = pd.concat([df_first_leader, df_second_leader], ignore_index=True)
-    #     print(df_first_leader.shape)
-    #     print(df_second_leader.shape)
-    #     print(df_final.shape)
-    #     sensors_positions = pd.read_csv(f'{data_path}/sensors-positions_n-0_seed-{seed_to_plot}.0.csv')
-    #     data[0] = (df_true, df_final, sensors_positions)
-    #     #data[1] = (df_true, df_second_leader, sensors_positions)
-    #     generate_charts(data, charts_path, 'trajectories')
 
-        for experiment in experiments:
+#     df_true = read_alchemist_csv(f'{data_path}/real-trajectory_seed-{seed_to_plot}.0.csv')
+#
+#     df_first_leader  = pd.read_csv(f'{data_path}/estimations_node-12_n-0_seed-{seed_to_plot}.0.csv')
+#     df_second_leader  = pd.read_csv(f'{data_path}/estimations_node-11_n-0_seed-{seed_to_plot}.0.csv')
+#     df_final = pd.concat([df_first_leader, df_second_leader], ignore_index=True)
+#     print(df_first_leader.shape)
+#     print(df_second_leader.shape)
+#     print(df_final.shape)
+#     sensors_positions = pd.read_csv(f'{data_path}/sensors-positions_n-0_seed-{seed_to_plot}.0.csv')
+#     data[0] = (df_true, df_final, sensors_positions)
+#     #data[1] = (df_true, df_second_leader, sensors_positions)
+#     generate_charts(data, charts_path, 'trajectories')
 
-            df_true = read_alchemist_csv(f'{data_path}/real-trajectory_numberOfNeighbors-{experiment}_seed-{seed_to_plot}.0.csv')
-            #df_true = read_alchemist_csv(f'{data_path}/real-trajectory_seed-{seed_to_plot}.0.csv')
+    for experiment in experiments:
 
-            dfs = []
+        #df_true = read_alchemist_csv(f'{data_path}/real-trajectory_numberOfNeighbors-{experiment}_seed-{seed_to_plot}.0.csv')
+        df_true = read_alchemist_csv(f'{data_path}/real-trajectory_neighboringDistance-{experiment}_seed-{seed_to_plot}.0.csv')
 
-            for i in range(25):
-                df_estimation = pd.read_csv(f'{data_path}/estimations_node-{i}_n-{experiment}_seed-{seed_to_plot}.0.csv')
-                dfs.append(df_estimation)
+        dfs = []
 
-            df_estimation_aggregated = pd.concat(dfs).groupby(level=0).mean()
+#         for i in [12]: #range(25):
+#             df_estimation = pd.read_csv(f'{data_path}/estimations_node-{i}_n-{experiment}_seed-{seed_to_plot}.0.csv')
+#             dfs.append(df_estimation)
 
-            sensors_positions = pd.read_csv(f'{data_path}/sensors-positions_n-{experiment}_seed-{seed_to_plot}.0.csv')
+#         df_estimation_aggregated = pd.concat(dfs).groupby(level=0).mean()
 
-            data[experiment] = (df_true, df_estimation_aggregated, sensors_positions)
+        df_first_leader  = pd.read_csv(f'{data_path}/estimations_node-12_n-{experiment}_seed-{seed_to_plot}.0.csv')
+        df_second_leader  = pd.read_csv(f'{data_path}/estimations_node-11_n-{experiment}_seed-{seed_to_plot}.0.csv')
+        df_final = pd.concat([df_first_leader, df_second_leader], ignore_index=True)
 
-        generate_charts(data, charts_path, f'trajectories_seed-{seed_to_plot}')
+        sensors_positions = pd.read_csv(f'{data_path}/sensors-positions_n-{experiment}_seed-{seed_to_plot}.0.csv')
 
+        data[experiment] = (df_true, df_final, sensors_positions)
+
+    generate_charts(data, charts_path, 'trajectories-fc-based')
