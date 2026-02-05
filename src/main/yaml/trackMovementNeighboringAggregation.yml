@@ -6,16 +6,16 @@ _constants:
 variables:
   numberOfParticles: &numberOfParticles 250
   maxInitialSpeed: &maxInitialSpeed 2.0
-  neighboringDistance: &neighboringDistance 100.0
+  neighboringDistance: &neighboringDistance 250.0
   numberOfNeighbors: &numberOfNeighbors
     type: ArbitraryVariable
-    parameters: [ 0, [ 6] ]
+    parameters: [ 0, [0, 1, 2, 4, 7] ]
   stepLength: &stepLength 30
   dataPath: &dataPath "data"
   size: &size 150
   seed: &seed
     min: 0
-    max: 30
+    max: 100
     step: 1
     default: 42
 
